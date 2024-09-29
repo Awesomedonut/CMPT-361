@@ -47,8 +47,8 @@ saveas(gcf, 'dog-surf.png');
 
 HP_g = imfilter(HP, gaus); % filtering using gauss
 LP_g = imfilter(LP, gaus);
-imwrite(HP_g, 'HP-filt.png');
-imwrite(HP_g, 'LP-filt.png');
+imwrite(HP_g, 'HP-filt.png'); % gauss filtered images
+imwrite(LP_g, 'LP-filt.png');
 
 HP_fg = fft2(HP_g); % frequency representation of gauss filtered images
 LP_fg = fft2(LP_g); % same process as part 2, but on gauss filtered imgs
@@ -56,10 +56,41 @@ HP_fg = fftshift(HP_fg);
 LP_fg = fftshift(LP_fg);
 HP_fg = abs(HP_fg) / 5; 
 LP_fg = abs(LP_fg) / 5;
-imwrite(HP_fg, 'HP-filt-freq.png');
+imwrite(HP_fg, 'HP-filt-freq.png'); % freq rep of gauss filtered imgs
 imwrite(LP_fg, 'LP-filt-freq.png');
 
-imshow([HP_fg LP_fg])
+ft_d = fft2(dog, 500, 500); % fourier transform of DoG kernel, size 500x500
+HP_fd = fft2(HP); 
+LP_fd = fft2(LP);
+HP_fd = HP_fd .* ft_d; % filtering using DoG kernel. 
+                       % result is freq rep of DoG filtered imgs
+LP_fd = LP_fd .* ft_d;
+
+HP_d = ifft2(HP_fd); % inverse fourier transform, converting back to img
+LP_d = ifft2(LP_fd); 
+imwrite(HP_d, 'HP-dogfilt.png'); % DoG filtered imgs
+imwrite(LP_d, 'LP-dogfilt.png');
+
+HP_fd = fftshift(HP_fd); % shift freq rep of DoG 
+LP_fd = fftshift(LP_fd);
+HP_fd = abs(HP_fd) / 5; % taking magnitude and adjusting brightness of freq rep of DoG imgs
+LP_fd = abs(LP_fd) / 5;
+imwrite(HP_fd, 'HP-dogfilt-freq.png'); % freq rep of DoG filtered imgs
+imwrite(LP_fd, 'LP-dogfilt-freq.png');
+
+
+
+% 4: ANTI-ALIASING
+
+
+
+imshow([HP_fd LP_fd]);
+
+
+
+
+
+
 
 
 
