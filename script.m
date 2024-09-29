@@ -82,9 +82,25 @@ imwrite(LP_fd, 'LP-dogfilt-freq.png');
 
 % 4: ANTI-ALIASING
 
+HP_sub2 = HP(1:2:end, 1:2:end); %  subsample to half. step size 2
+LP_sub2 = LP(1:2:end, 1:2:end); 
+imwrite(HP_sub2, 'HP-sub2.png'); % subsampled img (spatial domain)
+imwrite(LP_sub2, 'LP-sub2.png');
 
+HP_sub2_freq = fftshift(fft2(HP_sub2)); % subsampled freq rep (freq domain)
+LP_sub2_freq = fftshift(fft2(LP_sub2));
+HP_sub2_freq = abs(HP_sub2_freq) / 70;
+LP_sub2_freq = abs(LP_sub2_freq) / 70;
+imwrite(HP_sub2_freq, 'HP-sub2-freq.png');
+imwrite(LP_sub2_freq, 'LP-sub2-freq.png');
 
-imshow([HP_fd LP_fd]);
+% HP_sub4 = HP(1:4:end, 1:4:end); % subsample to quarter
+% LP_sub4 = LP(1:4:end, 1:4:end)
+% anti-aliasing for half
+
+% anti-aliasing for quarter
+
+imshow([HP_sub2_freq LP_sub2_freq]);
 
 
 
