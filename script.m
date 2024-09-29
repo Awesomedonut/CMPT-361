@@ -94,13 +94,29 @@ LP_sub2_freq = abs(LP_sub2_freq) / 70;
 imwrite(HP_sub2_freq, 'HP-sub2-freq.png');
 imwrite(LP_sub2_freq, 'LP-sub2-freq.png');
 
-% HP_sub4 = HP(1:4:end, 1:4:end); % subsample to quarter
-% LP_sub4 = LP(1:4:end, 1:4:end)
+HP_sub4 = HP(1:4:end, 1:4:end); % subsample to quarter. step size 4
+LP_sub4 = LP(1:4:end, 1:4:end);
+imwrite(HP_sub4, 'HP-sub4.png'); % subsampled img (spatial domain)
+imwrite(LP_sub4, 'LP-sub4.png');
+
+
+HP_sub4_freq = fftshift(fft2(HP_sub4)); % subsampled freq rep (freq domain)
+LP_sub4_freq = fftshift(fft2(LP_sub4));
+HP_sub4_freq = abs(HP_sub4_freq) / 50;
+LP_sub4_freq = abs(LP_sub4_freq) / 50;
+
+%imshow([HP_sub2_freq LP_sub2_freq]);
+
+ imwrite(HP_sub4_freq, 'HP-sub4-freq.png');
+ imwrite(LP_sub4_freq, 'LP-sub4-freq.png');
+
+
+
 % anti-aliasing for half
 
 % anti-aliasing for quarter
 
-imshow([HP_sub2_freq LP_sub2_freq]);
+
 
 
 
