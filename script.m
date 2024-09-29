@@ -1,18 +1,28 @@
+% Yan Jin Song, student number 301470175
+
 % PART 1: TAKE TWO PHOTOS
 
 HP = imread('IMG_1042.JPG'); 
 LP = imread('IMG_1040.jpg');  
 
-HP = imresize(rgb2gray(HP), [500, 500]);
-LP = imresize(rgb2gray(LP), [500, 500]);
+HP = im2double(HP); % convert image to double
+LP = im2double(LP);
 
-imwrite(HP, 'HP.png');
+HP = imresize(HP, [500, 500]); % resize and crop to 500x500
+LP = imresize(LP, [500, 500]);
+
+HP = rgb2gray(HP); % convert to grayscale
+LP = rgb2gray(LP);
+
+imwrite(HP, 'HP.png'); % save images as HP.png and LP.png respectively
 imwrite(LP, 'LP.png');
 
 
 
-
 % PART 2: COMPUTE FREQUENCY REPRESENTATIONS
+
+high_fou = fft2(HP);
+low_fou = fft2(LP);
 
 HP_fft = fftshift(fft2(HP));
 LP_fft = fftshift(fft2(LP));
