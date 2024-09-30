@@ -121,6 +121,48 @@ imwrite(hf_filt_samp_4, 'HP-sub4-aa.png');
 imwrite(hf_sub4_freq, 'HP-sub4-aa-freq.png');
 
 
+
+% 5: CANNY EDGE DETECTION THRESHOLDING
+
+hp_optimal_threshold = [0.05, 0.25];
+hp_lowlow_threshold = [0.0000000000000001, 0.25];
+hp_highlow_threshold = [0.2, 0.25];
+hp_lowhigh_threshold = [0.05, 0.1];
+hp_highhigh_threshold = [0.05, 0.9];
+
+lp_optimal_threshold = [0.05, 0.075];
+lp_lowlow_threshold = [0.005, 0.075];
+lp_highlow_threshold = [0.074, 0.075];
+lp_lowhigh_threshold = [0.05, 0.06];
+lp_highhigh_threshold = [0.05, 0.25];
+
+hp_optimal = edge(HP, 'canny', hp_optimal_threshold);
+hp_lowlow = edge(HP, 'canny', hp_lowlow_threshold);
+hp_highlow = edge(HP, 'canny', hp_highlow_threshold);
+hp_lowhigh = edge(HP, 'canny', hp_lowhigh_threshold);
+hp_highhigh = edge(HP, 'canny', hp_highhigh_threshold);
+
+lp_optimal = edge(LP, 'canny', lp_optimal_threshold);
+lp_lowlow = edge(LP, 'canny', lp_lowlow_threshold);
+lp_highlow = edge(LP, 'canny', lp_highlow_threshold);
+lp_lowhigh = edge(LP, 'canny', lp_lowhigh_threshold);
+lp_highhigh = edge(LP, 'canny', lp_highhigh_threshold);
+
+%imshow([hp_optimal,hp_lowlow,hp_highlow,hp_lowhigh,hp_highhigh])
+%imshow([lp_optimal,lp_lowlow,lp_highlow,lp_lowhigh,lp_highhigh])
+
+imwrite(hp_optimal, 'HP-canny-optimal.png');
+imwrite(hp_lowlow, 'HP-canny-lowlow.png');
+imwrite(hp_highlow, 'HP-canny-highlow.png');
+imwrite(hp_lowhigh, 'HP-canny-lowhigh.png');
+imwrite(hp_highhigh, 'HP-canny-highhigh.png');
+
+imwrite(lp_optimal, 'LP-canny-optimal.png');
+imwrite(lp_lowlow, 'LP-canny-lowlow.png');
+imwrite(lp_highlow, 'LP-canny-highlow.png');
+imwrite(lp_lowhigh, 'LP-canny-lowhigh.png');
+imwrite(lp_highhigh, 'LP-canny-highhigh.png');
+
 %imshow([HP_sub2_freq LP_sub2_freq]);
 
 

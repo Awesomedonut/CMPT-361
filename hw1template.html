@@ -81,7 +81,7 @@ For the frequency domain, HP looks completely different as well due to very bad 
 <br><br>
 <img src=" HP-canny-lowhigh.png" alt=" HP-canny-lowhigh" width="300" height="300">
 <img src=" HP-canny-highhigh.png" alt=" HP-canny-highhigh" width="300" height="300">
-<p>For HP, the optimal parameters were selected as they provided a balanced edge representation. The important outlines are all captured.</p>
+<p>For HP, my threshold was [0.05, 0.25]. These numbers were selected as they provided a balanced edge detection. The important outlines are all captured. The graph pattern of the mosquito net is quite clean. I believe it is the perfect setting -- indeed, though the outline doesn't capture perfect squares, that actually makes sense as in the original image, there were trees and bushes behind the mosquito net. The optimal settings doesn't leave out a lot of detail like the highigh, nor does it include too much unneeded noise like the lowhigh. Highigh has much of the net missing, while lowhigh includes too many bushes near the top. Lowlow is almost indistinguishable from the optimal, it's just missing minor details from the optimal net. Highlow is missing even more detail from the net, specifically the upper middle part.</p>
 
 <img src="LP-canny-optimal.png" alt="LP-canny-optimal" width="500" height="500">
 <br><br>
@@ -90,7 +90,7 @@ For the frequency domain, HP looks completely different as well due to very bad 
 <br><br>
 <img src=" LP-canny-lowhigh.png" alt=" LP-canny-lowhigh" width="300" height="300">
 <img src=" LP-canny-highhigh.png" alt=" LP-canny-highhigh" width="300" height="300">
-<p>For LP, the lowlow setting introduces many irrelevant edges.</p>
+<p>The optimal interval for LP is actually quite small. LP's setting, while the best amongst the five, is still not perfect. There are too many edges on my dad's face, but when I adjusted the parameters to try to lower the edges, detail for his clothes and the wall disappeared (like in highhigh). Also regarding highigh, it clearly ignores many important edges as my dad's face is half missing. For LP, the lowlow and lowhigh settings introduce many irrelevant edges such that my dad's face looks super wrinkly and noisy. Highlow, which is the closest, is missing important edges on my dad's clothes such as the pocket detail on the left.</p>
 
 
 </body> </html>
