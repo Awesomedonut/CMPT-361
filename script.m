@@ -104,19 +104,24 @@ HP_sub4_freq = fftshift(fft2(HP_sub4)); % subsampled freq rep (freq domain)
 LP_sub4_freq = fftshift(fft2(LP_sub4));
 HP_sub4_freq = abs(HP_sub4_freq) / 50;
 LP_sub4_freq = abs(LP_sub4_freq) / 50;
+imwrite(HP_sub4_freq, 'HP-sub4-freq.png');
+imwrite(LP_sub4_freq, 'LP-sub4-freq.png');
+
+hf_filt_2 = imgaussfilt(HP, 1.5); % anti-aliasing for half
+                                  % standard deviation is 1.5
+hf_filt_samp_2 = hf_filt_2(1:2:end, 1:2:end); %
+hf_sub2_freq = abs(fftshift(fft2(hf_filt_samp_2))) / 20;
+imwrite(hf_filt_samp_2, 'HP-sub2-aa.png');
+imwrite(hf_sub2_freq, 'HP-sub2-aa-freq.png');
+
+hf_filt_4 = imgaussfilt(HP, 3); % anti-aliasing for quarter. SD is 3
+hf_filt_samp_4 = hf_filt_4(1:4:end, 1:4:end);
+hf_sub4_freq = abs(fftshift(fft2(hf_filt_samp_4))) / 20;
+imwrite(hf_filt_samp_4, 'HP-sub4-aa.png');
+imwrite(hf_sub4_freq, 'HP-sub4-aa-freq.png');
+
 
 %imshow([HP_sub2_freq LP_sub2_freq]);
-
- imwrite(HP_sub4_freq, 'HP-sub4-freq.png');
- imwrite(LP_sub4_freq, 'LP-sub4-freq.png');
-
-
-
-% anti-aliasing for half
-
-% anti-aliasing for quarter
-
-
 
 
 

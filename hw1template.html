@@ -68,7 +68,9 @@ For the frequency domain, HP looks completely different as well due to very bad 
 <br><br>
 <img src="HP-sub4-aa.png" alt="HP-sub4-aa" width="300" height="300">
 <img src="HP-sub4-aa-freq.png" alt="HP-sub4-aa-freq" width="300" height="300">
-<p>These subsamples have less aliasing compared to the ones without anti-aliasing. The sizes and standard deviations of the two Gaussian filters used are [7,7], [11,11], 1.0, and 1.5 respectively.</p>
+<p>The subsamples for HP have a lot less aliasing compared to the ones without anti-aliasing. The Gaussian filter for half HP has standard deviation 1.5 and kernel size 9 × 9. The Gaussian filter for quarter HP has standard deviation 3 and kernel size 18 × 18.
+</p>
+<p> For half HP, anti-aliasing makes it so that the half subsampled image almost looks like the original! This is because the high frequency content has been reduced by the Gaussian filter's smoothing effect, which then preserves the integrity of the low frequency components. For quarter HP, anti-aliasing still helps reduce the distortions and jagged edges a lot, but it is even more blurry and less clear due to the low frequency content. </p>
 
 <h4>5: Canny edge detection thresholding</h4>
 
