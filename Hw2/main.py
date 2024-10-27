@@ -1,7 +1,8 @@
 import cv2 as cv
 import numpy as np
 
-from utils import read_and_resize_image, my_fast_detector
+from image_processing import read_and_resize_image
+from fast_corner_detection import my_fast_detector
 
 
 def main():
