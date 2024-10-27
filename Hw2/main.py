@@ -10,7 +10,9 @@ def main():
         "IMG_1180.jpg": "S2-im1.png",
         "IMG_1181.jpg": "S2-im2.png",
         "IMG_1182.jpg": "S3-im1.png",
-        "IMG_1179.jpg": "S3-im2.png"
+        "IMG_1179.jpg": "S3-im2.png",
+        "IMG_1185.jpg": "S4-im1.png",
+        "IMG_1186.jpg": "S4-im2.png"
     }
 
     for photo_path, img_name in photo_sets.items():
@@ -26,6 +28,10 @@ def main():
         img = cv.imread(input_path)
         cv.imwrite(output, my_fast_detector(img))
         print(f"imwrite to {output}")
+
+    # 2: FASTR feature detector
+    # 3: Point description and matching
+    # 4: RANSAC and Panoramas
 
 
 main()
