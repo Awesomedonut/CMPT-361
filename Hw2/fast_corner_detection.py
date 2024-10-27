@@ -8,6 +8,10 @@ N = 12
 # high-speed test points: example pixels 1, 9, 5, 13
 high_speed_pixels = [(0, 3), (0, -3), (-3, 0), (3, 0)]
 
+# harris constants
+K = 0.04
+H_THRESH = 0.005
+
 def my_fast_detector(img):
     img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     img_gray = convert_img_to_normalized_float(img_gray)
@@ -54,3 +58,52 @@ def create_corner_overlay(img_gray, corners):
     overlay = (img_gray * 255).astype(np.uint8)  # convert to int so it's compatible with original image
     overlay[corners] = 255
     return overlay
+
+def my_fastr_detector(img):
+    img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img_gray = convert_img_to_normalized_float(img_gray)
+    
+    brights, darks = initialize_matrices(img_gray)
+    corners = detect_initial_corners(img_gray, brights, darks)
+    corners = detect_other_corners(img_gray, brights, darks, corners)
+    
+    corner_mask = apply_harris_measure(img_gray, corners)
+    corners = create_corner_overlay(img_gray, corner_mask)
+    return corners
+
+def apply_harris_measure(img_gray, fast_corners):
+    dx = calculate_x_derivative(img_gray)
+    dy = calculate_y_derivative(img_gray)
+    
+    dx2, dy2, dxy = multiply_components(dx, dy)
+    dx2, dy2, dxy = apply_gaussian_blurring(dx2, dy2, dxy)
+    harris_response = calculate_harris_response(dx2, dy2, dxy)
+    harris_response = mask_non_corner_responses(harris_response, fast_corners)
+    
+    return harris_response > H_THRESH
+
+def calculate_x_derivative(img):
+    return cv.Sobel(img, cv.CV_64F, 1, 0, ksize=3)
+
+def calculate_y_derivative(img): 
+    return cv.Sobel(img, cv.CV_64F, 0, 1, ksize=3)
+
+def multiply_components(dx, dy):
+    return dx * dx, dy * dy, dx * dy
+
+def apply_gaussian_blurring(dx2, dy2, dxy):
+    window_size = 3
+    dx2 = cv.GaussianBlur(dx2, (window_size, window_size), 0)
+    dy2 = cv.GaussianBlur(dy2, (window_size, window_size), 0)
+    dxy = cv.GaussianBlur(dxy, (window_size, window_size), 0)
+    return dx2, dy2, dxy
+
+def calculate_harris_response(dx2, dy2, dxy):
+    det = (dx2 * dy2) - (dxy * dxy)    # det(M) = A*B - C^2
+    trace = dx2 + dy2                   # trace(M) = A + B
+    return det - K * trace              # R = det(M) - k*trace(M)
+
+def mask_non_corner_responses(harris_response, fast_corners):
+    harris_response[~fast_corners] = 0 # ~ operator is negation
+    return harris_response
+
