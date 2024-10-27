@@ -76,5 +76,7 @@ imwrite(S1fast, "S1-fast.png");
 S2fast = my_fast_detector(imread("S2-im1.png"));
 imwrite(S2fast, "S2-fast.png");
 
+% 2: Robust FAST using Harris Cornerness metric
+
 % 3: Point description and matching
 % 4: RANSAC and Panoramas
