@@ -15,6 +15,8 @@ python (or python3) main.py
 ```
 
 The sources I used for this assignment are the following:
+For conceptual knowledge:
 - https://en.wikipedia.org/wiki/Features_from_accelerated_segment_test
 - https://www.geeksforgeeks.org/image-resizing-using-opencv-python/
+Learning Python OpenCV syntax:
 - https://docs.opencv.org/4.x/dc/d0d/tutorial_py_features_harris.html
