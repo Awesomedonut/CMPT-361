@@ -44,7 +44,8 @@
 <img src="S1-fastR.png" alt="S1-fastR" width="300">
 <img src="S2-fastR.png" alt="S2-fastR" width="300">
 
-<p>The average time for FAST was 0.0467 seconds, and for FASTR it was 0.0620 seconds.</p>
+<p>The average time for FAST was 0.0513 seconds, and for FASTR it was 0.0715 seconds. After many rounds of testing, I consistently discovered that FASTR was always around 0.02 seconds slower than FAST. I was a bit surprised by this as there are a lot less points on the FASTR images, but upon second thought it makes a lot of sense as there's a lot more calculation for FASTR. The FASTR algorithm is more complex and requires more computational power, which is why it takes longer to process.</p>
+<p>Using Harris corner detection to remove weaker points for the FASTR part made it so that the FASTR image had a lot less points, but the matches were a lot more accurate. Compared with the original FAST images, the FASTR images had a lot less noise. A lot of the edges of the images for FAST were mistaken for corners, but with the FASTR algorithm, there were a lot less of those mistakes. Points on bushes and graphics (like printed text) on the FAST images, for instance, were not present on the FASTR images.</p>
 
 
 <h4>3: Point description and matching</h4>
@@ -56,7 +57,7 @@
 <br><br>
 <img src="S2-fastRMatch.png" alt="S2-fastRMatch" width="600">
 
-<p>Your comment here</p>
+<p>The FAST matching functions took more than double the time for the FASTR functions!</p>
 
 <h4>4: RANSAC and Panoramas</h4>
 <img src="S1-panorama.png" alt="S1-panorama" width="600">
