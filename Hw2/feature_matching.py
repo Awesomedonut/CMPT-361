@@ -22,7 +22,7 @@ def match_features(img1, img2, keypoints1, keypoints2, desc1, desc2, is_fastr=Fa
     
     match_time = time.time() - start_time
     print(f"{'FASTR' if is_fastr else 'FAST'} matching time: {match_time:.4f} seconds")
-    print(f"Number of matches: {len(matches)}")
+    print(f"num of matches: {len(matches)}")
     
     return match_img, match_time
 

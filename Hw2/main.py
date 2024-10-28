@@ -117,7 +117,8 @@ def main():
     panorama_sets = [
         ("S3-im1.png", "S3-im2.png", "S3-panorama.png"),
         ("S2-im1.png", "S2-im2.png", "S2-panorama.png"),
-        ("S4-im1.png", "S4-im2.png", "S4-panorama.png")
+        ("S4-im1.png", "S4-im2.png", "S4-panorama.png"),
+        ("S1-im1.png", "S1-im2.png", "S1-panorama.png")
     ]
     
     for img1_path, img2_path, panorama_output in panorama_sets:
