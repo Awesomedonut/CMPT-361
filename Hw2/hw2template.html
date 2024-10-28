@@ -58,6 +58,8 @@
 <img src="S2-fastRMatch.png" alt="S2-fastRMatch" width="600">
 
 <p>The FAST matching functions took more than double the time for the FASTR functions!</p>
+<p>For descriptor generation, FAST took an average of 0.0443 seconds while FASTR only took 0.0190 seconds. So FAST was more than twice as slow as FASTR. For matching, FAST took an average of 0.3191 seconds while FASTR only took 0.0715 seconds. This means FASTR was more than 4 times faster than FAST! This makes sense as FASTR has a lot less points, so there's less computation needed.</p>
+<p>I used the ORB method; since I'm using Python, I just called cv.ORB_create through OpenCV. I did a lot of trial and error to find a reasonable threshold for the distance. I tried ranges from 3 to 50 and found that 8 was a good number. When the threshold was too high, there was a ridiculous amount of matches and made the image look like a mess, and when the threshold was too low, there were hardly any matches. So 8, a relatively low number, was a good choice.</p>
 
 <h4>4: RANSAC and Panoramas</h4>
 <img src="S1-panorama.png" alt="S1-panorama" width="600">
