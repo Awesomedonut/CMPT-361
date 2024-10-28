@@ -38,7 +38,3 @@ Learning Python NumPy syntax:
 - https://stackoverflow.com/questions/43438653/convert-image-file-to-float-array-in-python/52154326
 - https://www.geeksforgeeks.org/numpy-zeros_like-python/
 - https://www.programiz.com/python-programming/numpy/methods/where
-
-
-
-https://devdoc.net/python/scikit-image-doc-0.13.1/api/skimage.feature.html
