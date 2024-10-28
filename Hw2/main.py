@@ -115,46 +115,7 @@ def main():
     print_matching_times(fast_desc_times, fast_match_times, fastr_desc_times, fastr_match_times)
 
     # 4: RANSAC and Panoramas
-    fast_ransac_params = {
-        'reprojection_threshold': 4.0,  # pixels
-        'max_iterations': 1000,
-        'confidence': 0.995
-    }
-    
-    fastr_ransac_params = {
-        'reprojection_threshold': 3.0,  # pixels
-        'max_iterations': 500,
-        'confidence': 0.99
-    }
-    
-    panorama_sets = [
-        ("S3-im1.png", "S3-im2.png", "S3-panorama.png"),
-        ("S2-im1.png", "S2-im2.png", "S2-panorama.png"),
-        ("S4-im1.png", "S4-im2.png", "S4-panorama.png")
-    ]
-    
-    for img1_path, img2_path, output_path in panorama_sets:
-        img1 = cv.imread(img1_path)
-        img2 = cv.imread(img2_path)
-        
-        # Get FASTR corners and matches
-        fastr_corners1 = my_fastr_detector(img1) == 255
-        fastr_corners2 = my_fastr_detector(img2) == 255
-        
-        p1, p2, des1, des2, _ = generate_descriptors(
-            img1, img2, fastr_corners1, fastr_corners2, is_fastr=True
-        )
-        
-        if all(x is not None for x in [p1, p2, des1, des2]):
-            matches, _ = match_features(img1, img2, p1, p2, des1, des2, is_fastr=True)
-            if matches is not None:
-                # Create panorama using FASTR points
-                panorama = create_panorama(
-                    img1, img2, p1, p2, matches, fastr_ransac_params, is_fastr=True
-                )
-                if panorama is not None:
-                    cv.imwrite(output_path, panorama)
-                    print(f"Created panorama: {output_path}")
+  
 
     #5: Stitch 4 images instead of 2
 
