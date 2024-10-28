@@ -6,6 +6,7 @@ I did this assignment using Python. I used the OpenCV and NumPy libraries.
 To run the code, first install OpenCV. NumPy should be installed already:
 ```
 pip (or pip3) install opencv-python
+pip (or pip3) install opencv-contrib-python
 pip (or pip3) install numpy
 ```
 

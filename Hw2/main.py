@@ -4,9 +4,9 @@ import time
 
 from image_processing import read_and_resize_image
 from fast_corner_detection import my_fast_detector, my_fastr_detector
-from feature_matching import generate_descriptors, match_features
+from feature_matching import generate_descriptors, generate_descriptors_single_image, match_features
 from timing import calculate_and_print_average_times, print_matching_times
-from panorama import create_panorama
+from panorama import compute_matched_points, create_panorama
 
 
 def main():
@@ -16,12 +16,12 @@ def main():
         # "IMG_1181.jpg": "S2-im2.png", 
         # "IMG_1182.jpg": "S3-im1.png",
         # "IMG_1179.jpg": "S3-im2.png",
-        "IMG_1203.jpg": "S2-im1.png",
-        "IMG_1204.jpg": "S2-im2.png",
+        "IMG_1205.jpg": "S2-im1.png",
+        "IMG_1206.jpg": "S2-im2.png",
         "IMG_1207.jpg": "S3-im1.png", 
         "IMG_1208.jpg": "S3-im2.png",
-        "IMG_1185.jpg": "S4-im1.png",
-        "IMG_1186.jpg": "S4-im2.png"
+        "IMG_1182.jpg": "S4-im1.png",
+        "IMG_1179.jpg": "S4-im2.png"
     }
 
     for photo_path, img_name in photo_sets.items():
@@ -115,6 +115,39 @@ def main():
     print_matching_times(fast_desc_times, fast_match_times, fastr_desc_times, fastr_match_times)
 
     # 4: RANSAC and Panoramas
+    panorama_sets = [
+        ("S3-im1.png", "S3-im2.png", "S3-panorama.png"),
+        ("S2-im1.png", "S2-im2.png", "S2-panorama.png"),
+        ("S4-im1.png", "S4-im2.png", "S4-panorama.png")
+    ]
+    
+    for img1_path, img2_path, panorama_output in panorama_sets:
+        img1 = cv.imread(img1_path)
+        img2 = cv.imread(img2_path)
+        
+        if img1 is None or img2 is None:
+            print(f"Could not read images {img1_path} or {img2_path}")
+            continue
+            
+        # Get FASTR corners
+        fastr_corners1 = my_fastr_detector(img1) == 255
+        fastr_corners2 = my_fastr_detector(img2) == 255
+        
+        # Get keypoints and descriptors
+        keypoints1, _ = generate_descriptors_single_image(img1, fastr_corners1, is_fastr=True)
+        keypoints2, _ = generate_descriptors_single_image(img2, fastr_corners2, is_fastr=True)
+        
+        # Create panorama using FASTR points with SURF descriptors
+        panorama = create_panorama(img1, img2, keypoints1, keypoints2)
+        
+        if panorama is not None:
+            cv.imwrite(panorama_output, panorama)
+            print(f"Panorama saved to {panorama_output}")
+        else:
+            print(f"Failed to create panorama for {img1_path} and {img2_path}")
+   
+
+
   
 
     #5: Stitch 4 images instead of 2
