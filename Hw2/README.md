@@ -3,9 +3,8 @@ CMPT 361 Homework 2, by Yan Jin Song, student number 301470175
 I did this assignment using Python. I used the OpenCV and NumPy libraries.
 
 
-To run the code, first install OpenCV. NumPy should be installed already:
+To run the code, first install OpenCV and NumPy:
 ```
-pip (or pip3) install opencv-python
 pip (or pip3) install opencv-contrib-python
 pip (or pip3) install numpy
 ```
@@ -14,6 +13,8 @@ Run the code:
 ```
 python (or python3) main.py
 ```
+
+After I zipped all files, the file size was too big for the Coursys submission box. So, all images have been zipped inside my main zip file. Please unzip the file to see the images.
 
 The sources I used for this assignment are the following:
 

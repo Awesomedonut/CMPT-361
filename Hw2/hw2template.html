@@ -71,8 +71,8 @@
 <br><br>
 <img src="S4-panorama.png" alt="S4-panorama" width="600">
 
-<p>I used the FREAK feature description method for FAST and FASTR. I originally tried ORB, but it kept giving me distorted, warped, and freaky (pun intended) results no matter how much I adjusted my code. I switched to SURF, but sadly in the OpenCV installation I'm using, SURF is patented and can't be used without a license. So I ultimately switched to FREAK.</p>
-<p>I used OpenCV's findHomography function to use RANSAC. Before this, I also tried other functions such as estimateAffinePartial2D and estimateAffine2D, but they all gave me weird, warped results. For my RANSAC parameters, which were the same for all image sets, I increased the ransacReprojThreshold to 5.0, but kept maxIters to 2000 andconfidence to 0.995. This is helped with images with noise.</p>
+<p>I used the FREAK feature description method for FAST and FASTR. I originally tried ORB, but it kept giving me distorted, warped, and freaky (pun intended) results no matter how much I adjusted my code. I switched to SURF, but sadly in the OpenCV installation I'm using, SURF is patented and can't be used without a license. So I switched to FREAK, and it worked better, but there were still some freaky results (pun intended). The stitching was not smooth and the two images were visibly disjointed; I used OpenCV's findHomography function to use RANSAC. Before this, I also tried other functions such as estimateAffinePartial2D and estimateAffine2D, but they all gave me weird, warped results. For my RANSAC parameters, which were the same for all image sets, I increased the ransacReprojThreshold to 5.0, but kept maxIters to 2000 andconfidence to 0.995. So, I went back to ORB.</p>
+<p>For my final implementation, </p>
 
 
 </body> </html>

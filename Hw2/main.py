@@ -115,10 +115,11 @@ def main():
 
     # 4: RANSAC and Panoramas
     panorama_sets = [
+        ("S1-im1.png", "S1-im2.png", "S1-panorama.png"),
         ("S3-im1.png", "S3-im2.png", "S3-panorama.png"),
         ("S2-im1.png", "S2-im2.png", "S2-panorama.png"),
-        ("S4-im1.png", "S4-im2.png", "S4-panorama.png"),
-        ("S1-im1.png", "S1-im2.png", "S1-panorama.png")
+        ("S4-im1.png", "S4-im2.png", "S4-panorama.png")
+        
     ]
     
     for img1_path, img2_path, panorama_output in panorama_sets:
@@ -173,12 +174,7 @@ def main():
                 print(f"4-image panorama saved to {output_path}")
             else:
                 print(f"Failed to create 4-image panorama for {output_path}")
-   
 
-
-  
-
-    #5: Stitch 4 images instead of 2
 
 if __name__ == "__main__":
     main()
