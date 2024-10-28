@@ -33,6 +33,8 @@ Learning Python OpenCV syntax:
 - https://www.geeksforgeeks.org/python-opencv-drawmatchesknn-function/
 - https://answers.opencv.org/question/123476/estimateaffinepartial2d-and-estimateaffine2d/
 - https://www.geeksforgeeks.org/python-opencv-findhomography-inputs/
+- https://www.geeksforgeeks.org/image-stitching-with-opencv/?ref=oin_asr1
+- https://www.geeksforgeeks.org/python-opencv-bfmatcher-function/
 
 Learning Python NumPy syntax:
 - https://stackoverflow.com/questions/43438653/convert-image-file-to-float-array-in-python/52154326
