@@ -12,7 +12,7 @@ def print_matching_times(
     fastr_desc_times: List[float],
     fastr_match_times: List[float]
 ) -> None:
-    print("\naverage timing:")
+    print("\navg timing:")
     print(f"FAST descriptor generation: {sum(fast_desc_times)/len(fast_desc_times):.4f} seconds")
     print(f"FAST matching: {sum(fast_match_times)/len(fast_match_times):.4f} seconds")
     print(f"FASTR descriptor generation: {sum(fastr_desc_times)/len(fastr_desc_times):.4f} seconds")

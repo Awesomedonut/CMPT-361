@@ -1,148 +1,107 @@
 import cv2 as cv
 import numpy as np
+import random
+from typing import Tuple, List, Optional
 
-from fast_corner_detection import my_fastr_detector
-from feature_matching import generate_descriptors_single_image
+def create_panorama(im1: np.ndarray, im2: np.ndarray) -> np.ndarray:
+    keypoints_data = extract_and_match_keypoints(im1, im2)
+    homography_matrix = find_best_homography(keypoints_data)
+    return stitch_ims(im1, im2, homography_matrix)
 
-def get_homography(p1, p2):
-    H, mask = cv.findHomography(p1, p2, cv.RANSAC, 
-                                ransacReprojThreshold=5.0,
-                                maxIters=2000,
-                                confidence=0.995)
+def extract_and_match_keypoints(im1: np.ndarray, im2: np.ndarray) -> List[List[float]]:
+    keypoints1, descriptors1 = detect_keypoints(im1)
+    keypoints2, descriptors2 = detect_keypoints(im2)
+    return match_keypoints(keypoints1, keypoints2, descriptors1, descriptors2)
 
-    return H, mask
+def detect_keypoints(img: np.ndarray) -> Tuple[List, np.ndarray]:
+    gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    orb_detector = cv.ORB_create()
+    return orb_detector.detectAndCompute(gray_img, None)
 
-def warp_imgs(img1, img2, H):
-    h1, w1 = img1.shape[:2]
-    h2, w2 = img2.shape[:2]
-    
-    corners_img2 = np.float32([[0,0], [0,h2], [w2,h2], [w2,0]]).reshape(-1,1,2)
-    warped_corners_img2 = cv.perspectiveTransform(corners_img2, H)
-    
-    corners = np.concatenate((np.float32([[0,0], [0,h1], [w1,h1], [w1,0]]).reshape(-1,1,2), warped_corners_img2), axis=0)
-    
-    [xmin, ymin] = np.int32(corners.min(axis=0).ravel() - 0.5)
-    [xmax, ymax] = np.int32(corners.max(axis=0).ravel() + 0.5)
-    
-    translation = [-xmin, -ymin]
-    H_translation = np.array([[1, 0, translation[0]],
-                              [0, 1, translation[1]],
-                              [0, 0, 1]])
-    
-    result = cv.warpPerspective(img2, H_translation.dot(H), (xmax - xmin, ymax - ymin))
-    
-    result[translation[1]:h1+translation[1], translation[0]:w1+translation[0]] = img1
-    
-    return result
+def match_keypoints(keypoints1: List, keypoints2: List, 
+                   descriptors1: np.ndarray, descriptors2: np.ndarray) -> List[List[float]]:
+    matcher = cv.BFMatcher(cv.NORM_HAMMING, crossCheck=True)
+    matches = matcher.match(descriptors1, descriptors2)
+    matches = sorted(matches, key=lambda x: x.distance)
 
-def create_panorama(img1, img2, p1, p2):
-    gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
-    gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+    matched_pts = []
+    for match in matches:
+        p1 = keypoints1[match.queryIdx].pt
+        p2 = keypoints2[match.trainIdx].pt
+        matched_pts.append([p1[0], p1[1], p2[0], p2[1]])
+
+    return matched_pts
+
+def compute_homography(points: List[List[float]]) -> np.ndarray:
+    equation_matrix = []
+    for point in points:
+        x1, y1 = point[0], point[1]
+        x2, y2 = point[2], point[3]
+        equation_matrix.append([x1, y1, 1, 0, 0, 0, -x2 * x1, -x2 * y1, -x2])
+        equation_matrix.append([0, 0, 0, x1, y1, 1, -y2 * x1, -y2 * y1, -y2])
+
+    equation_matrix = np.array(equation_matrix)
+    _, _, vh = np.linalg.svd(equation_matrix)
+    homography = vh[-1, :].reshape(3, 3)
+    return homography / homography[2, 2]
+
+def find_best_homography(matched_points: List[List[float]], 
+                        max_iterations: int = 5000,
+                        distance_threshold: float = 5.0) -> np.ndarray:
+    best_inliers = []
+    best_homography = None
     
-    freak = cv.xfeatures2d.FREAK_create()
-    
-    _, des1 = freak.compute(gray1, p1)
-    _, des2 = freak.compute(gray2, p2)
-    
-    bf = cv.BFMatcher(cv.NORM_HAMMING)
-    
-    matches = bf.knnMatch(des1, des2, k=2)
-    
-    good_matches = []
-    for pair in matches:
-        if len(pair) < 2:
-            continue
-        m, n = pair
-        if m.distance < 0.8 * n.distance:
-            good_matches.append(m)
-            
-    print(f"num of goods: {len(good_matches)}")
-    
-    if len(good_matches) < 10:
-        return None
+    for _ in range(max_iterations):
+        sample_points = random.choices(matched_points, k=4)
+        homography = compute_homography(sample_points)
+        current_inliers = find_inliers(matched_points, homography, distance_threshold)
         
-    src_pts = np.float32([p1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
-    dst_pts = np.float32([p2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+        if len(current_inliers) > len(best_inliers):
+            best_inliers = current_inliers
+            best_homography = homography
     
-    H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 
-                               ransacReprojThreshold=5.0,
-                               maxIters=2000,
-                               confidence=0.995)
+    return best_homography
+
+def find_inliers(points: List[List[float]], 
+                 homography: np.ndarray,
+                 threshold: float) -> List[List[float]]:
+    inliers = []
+    for point in points:
+        p1 = np.array([point[0], point[1], 1]).reshape(3, 1)
+        p2 = np.array([point[2], point[3], 1]).reshape(3, 1)
+        
+        transformed_p1 = np.dot(homography, p1)
+        transformed_p1 = transformed_p1 / transformed_p1[2]
+        
+        if np.linalg.norm(p2 - transformed_p1) < threshold:
+            inliers.append(point)
     
-    if H is None:
-        return None
+    return inliers
+
+def stitch_ims(im1: np.ndarray, im2: np.ndarray, 
+                 homography: np.ndarray) -> np.ndarray:
+    height1, width1 = im2.shape[:2]
+    height2, width2 = im1.shape[:2]
+
+    corners1 = np.float32([[0, 0], [0, height1], [width1, height1], [width1, 0]]).reshape(-1, 1, 2)
+    corners2 = np.float32([[0, 0], [0, height2], [width2, height2], [width2, 0]]).reshape(-1, 1, 2)
     
-    h1, w1 = img1.shape[:2]
-    h2, w2 = img2.shape[:2]
-    
-    corners1 = np.float32([[0, 0], [0, h1], [w1, h1], [w1, 0]]).reshape(-1, 1, 2)
-    corners2_transformed = cv.perspectiveTransform(corners1, H)
-    
-    corners = np.concatenate((
-        np.float32([[0, 0], [0, h2], [w2, h2], [w2, 0]]).reshape(-1, 1, 2),
-        corners2_transformed
-    ))
-    
-    [xmin, ymin] = np.int32(corners.min(axis=0).ravel() - 0.5)
-    [xmax, ymax] = np.int32(corners.max(axis=0).ravel() + 0.5)
-    
-    translation = np.array([
-        [1, 0, -xmin],
-        [0, 1, -ymin],
+    transformed_corners2 = cv.perspectiveTransform(corners2, homography)
+    all_corners = np.concatenate((corners1, transformed_corners2), axis=0)
+
+    min_x, min_y = np.int32(all_corners.min(axis=0).ravel() - 0.5)
+    max_x, max_y = np.int32(all_corners.max(axis=0).ravel() + 0.5)
+
+    translation_matrix = np.array([
+        [1, 0, -min_x],
+        [0, 1, -min_y],
         [0, 0, 1]
     ])
-    
-    output_img = cv.warpPerspective(
-        img1, 
-        translation.dot(H),
-        (xmax - xmin, ymax - ymin)
-    )
-    
-    output_img[-ymin:h2-ymin, -xmin:w2-xmin] = img2
-    
-    return output_img
 
-def compute_matched_points(p1, p2, des1, des2):
-    bf = cv.BFMatcher()
+    final_homography = translation_matrix.dot(homography)
+    output_size = (max_x - min_x, max_y - min_y)
     
-    matches = bf.knnMatch(des1, des2, k=2)
+    warped_im = cv.warpPerspective(im1, final_homography, output_size)
+    warped_im[-min_y:height1 + (-min_y), -min_x:width1 + (-min_x)] = im2
     
-    good_matches = []
-    for m, n in matches:
-        if m.distance < 0.8 * n.distance:
-            good_matches.append(m)
-    
-    print(f"num of matches : {len(good_matches)}")
-    
-    if len(good_matches) < 10:
-        return [], []
-    
-    matched_pts1 = []
-    matched_pts2 = []
-    for match in good_matches:
-        matched_pts1.append(p1[match.queryIdx].pt)
-        matched_pts2.append(p2[match.trainIdx].pt)
-    
-    return np.float32(matched_pts1), np.float32(matched_pts2)
-
-def create_panorama_4_images(images, keypoints_list):
-        
-    pano_1_2 = create_panorama(images[0], images[1], keypoints_list[0], keypoints_list[1])
-    if pano_1_2 is None:
-        print("fail pano 1")
-        return None
-        
-    pano_3_4 = create_panorama(images[2], images[3], keypoints_list[2], keypoints_list[3])
-    if pano_3_4 is None:
-        print("fail pano 2")
-        return None
-    
-    pano_1_2_corners = my_fastr_detector(pano_1_2) == 255
-    pano_3_4_corners = my_fastr_detector(pano_3_4) == 255
-    
-    pano_1_2_p, _ = generate_descriptors_single_image(pano_1_2, pano_1_2_corners, is_fastr=True)
-    pano_3_4_p, _ = generate_descriptors_single_image(pano_3_4, pano_3_4_corners, is_fastr=True)
-    
-    final_pano = create_panorama(pano_1_2, pano_3_4, pano_1_2_p, pano_3_4_p)
-    
-    return final_pano
+    return warped_im
