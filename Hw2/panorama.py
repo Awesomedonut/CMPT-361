@@ -3,6 +3,9 @@ import numpy as np
 import random
 from typing import Tuple, List, Optional
 
+random.seed(42) # random seed so that RANSAC results are always the same. set to 42 which is a common seed num
+np.random.seed(42)
+
 def create_panorama(im1: np.ndarray, im2: np.ndarray, is_fastr: bool = False) -> np.ndarray:
     keypoints_data = extract_and_match_keypoints(im1, im2)
     homography_matrix = find_best_homography(keypoints_data, is_fastr=is_fastr)
@@ -15,13 +18,12 @@ def extract_and_match_keypoints(im1: np.ndarray, im2: np.ndarray) -> List[List[f
 
 def detect_keypoints(img: np.ndarray) -> Tuple[List, np.ndarray]:
     gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    orb_detector = cv.ORB_create()
+    orb_detector = cv.ORB_create() # use ORB method
     return orb_detector.detectAndCompute(gray_img, None)
 
 def match_keypoints(keypoints1: List, keypoints2: List, 
                    descriptors1: np.ndarray, descriptors2: np.ndarray) -> List[List[float]]:
-    matcher = cv.BFMatcher(cv.NORM_HAMMING, crossCheck=True)
-    matches = matcher.match(descriptors1, descriptors2)
+    matches = cv.BFMatcher(cv.NORM_HAMMING, crossCheck=True).match(descriptors1, descriptors2) # use BFMatcher to match descr
     matches = sorted(matches, key=lambda x: x.distance)
 
     matched_pts = []
@@ -50,8 +52,8 @@ def find_best_homography(matched_points: List[List[float]],
     if is_fastr == True:
         max_iterations = 5000
         distance_threshold: float = 5.0
-    else:
-        max_iterations = 2000
+    else: # it is FAST
+        max_iterations = 6000
         distance_threshold = 7.0
     
     best_inliers = []

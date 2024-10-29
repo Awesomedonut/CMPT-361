@@ -19,10 +19,13 @@ After I zipped all files, the file size was too big for the Coursys submission b
 The sources I used for this assignment are the following:
 
 For conceptual knowledge:
+- 361 YouTube lectures
 - https://en.wikipedia.org/wiki/Features_from_accelerated_segment_test
 - https://www.mathworks.com/help/vision/ug/feature-based-panoramic-image-stitching.html
 - https://docs.opencv.org/3.4/df/d0c/tutorial_py_fast.html
 - https://sbme-tutorials.github.io/2018/cv/notes/6_week6.html#harris-operator
+- https://stackoverflow.com/questions/29377683/why-ransac-gives-me-different-results-every-time-i-run-it-on-the-same-point-clou
+- https://towardsdatascience.com/random-sample-consensus-helps-you-filter-those-pesky-outliers-9dbfbb8b668f
 
 Learning Python OpenCV syntax:
 - https://www.geeksforgeeks.org/image-resizing-using-opencv-python/
