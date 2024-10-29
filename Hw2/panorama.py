@@ -98,14 +98,14 @@ def stitch_ims(im1: np.ndarray, im2: np.ndarray,
     height1, width1 = im2.shape[:2]
     height2, width2 = im1.shape[:2]
 
-    corners1: np.ndarray = float([[0, 0], [0, height1], [width1, height1], [width1, 0]]).reshape(-1, 1, 2)
-    corners2: np.ndarray = float([[0, 0], [0, height2], [width2, height2], [width2, 0]]).reshape(-1, 1, 2)
+    corners1 = np.float32([[0, 0], [0, height1], [width1, height1], [width1, 0]]).reshape(-1, 1, 2)
+    corners2 = np.float32([[0, 0], [0, height2], [width2, height2], [width2, 0]]).reshape(-1, 1, 2)
     
     transformed_corners2: np.ndarray = cv.perspectiveTransform(corners2, homography)
     all_corners: np.ndarray = np.concatenate((corners1, transformed_corners2), axis=0)
 
-    min_x, min_y = int(all_corners.min(axis=0).ravel() - 0.5)
-    max_x, max_y = int(all_corners.max(axis=0).ravel() + 0.5)
+    min_x, min_y = np.int32(all_corners.min(axis=0).ravel() - 0.5)
+    max_x, max_y = np.int32(all_corners.max(axis=0).ravel() + 0.5)
 
     translation_matrix: np.ndarray = np.array([
         [1, 0, -min_x],
