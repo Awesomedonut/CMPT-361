@@ -3,9 +3,9 @@ import numpy as np
 import random
 from typing import Tuple, List, Optional
 
-def create_panorama(im1: np.ndarray, im2: np.ndarray) -> np.ndarray:
+def create_panorama(im1: np.ndarray, im2: np.ndarray, is_fastr: bool = False) -> np.ndarray:
     keypoints_data = extract_and_match_keypoints(im1, im2)
-    homography_matrix = find_best_homography(keypoints_data)
+    homography_matrix = find_best_homography(keypoints_data, is_fastr=is_fastr)
     return stitch_ims(im1, im2, homography_matrix)
 
 def extract_and_match_keypoints(im1: np.ndarray, im2: np.ndarray) -> List[List[float]]:
@@ -46,8 +46,15 @@ def compute_homography(points: List[List[float]]) -> np.ndarray:
     return homography / homography[2, 2]
 
 def find_best_homography(matched_points: List[List[float]], 
-                        max_iterations: int = 5000,
+                        is_fastr: bool = False,
                         distance_threshold: float = 5.0) -> np.ndarray:
+    if is_fastr:
+        max_iterations = 8000
+        distance_threshold = 3.0
+    else:
+        max_iterations = 2000
+        distance_threshold = 7.0
+    
     best_inliers = []
     best_homography = None
     
