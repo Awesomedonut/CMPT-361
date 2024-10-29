@@ -46,11 +46,10 @@ def compute_homography(points: List[List[float]]) -> np.ndarray:
     return homography / homography[2, 2]
 
 def find_best_homography(matched_points: List[List[float]], 
-                        is_fastr: bool = False,
-                        distance_threshold: float = 5.0) -> np.ndarray:
-    if is_fastr:
-        max_iterations = 8000
-        distance_threshold = 3.0
+                        is_fastr: bool) -> np.ndarray:
+    if is_fastr == True:
+        max_iterations = 5000
+        distance_threshold: float = 5.0
     else:
         max_iterations = 2000
         distance_threshold = 7.0
