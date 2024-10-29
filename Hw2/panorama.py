@@ -94,10 +94,7 @@ def find_inliers(points: List[List[float]],
 
 def stitch_ims(im1: np.ndarray, im2: np.ndarray, 
                  homography: np.ndarray) -> np.ndarray:
-    height1: int
-    width1: int
-    height2: int
-    width2: int
+    
     height1, width1 = im2.shape[:2]
     height2, width2 = im1.shape[:2]
 
@@ -107,10 +104,6 @@ def stitch_ims(im1: np.ndarray, im2: np.ndarray,
     transformed_corners2: np.ndarray = cv.perspectiveTransform(corners2, homography)
     all_corners: np.ndarray = np.concatenate((corners1, transformed_corners2), axis=0)
 
-    min_x: int
-    min_y: int
-    max_x: int
-    max_y: int
     min_x, min_y = int(all_corners.min(axis=0).ravel() - 0.5)
     max_x, max_y = int(all_corners.max(axis=0).ravel() + 0.5)
 
