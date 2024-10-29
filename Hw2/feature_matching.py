@@ -1,8 +1,11 @@
 import cv2 as cv
 import numpy as np
 import time
+from typing import List, Tuple, Optional
 
-def generate_descriptors(img1, img2, corners1, corners2, is_fastr=False):
+def generate_descriptors(img1: np.ndarray, img2: np.ndarray, 
+                        corners1: np.ndarray, corners2: np.ndarray, 
+                        is_fastr: bool=False) -> Tuple[List, List, np.ndarray, np.ndarray, float]:
     start_time = time.time()
     
     img1_gray = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
@@ -15,7 +18,10 @@ def generate_descriptors(img1, img2, corners1, corners2, is_fastr=False):
     
     return keypoints1, keypoints2, descriptors1, descriptors2, desc_time
 
-def match_features(img1, img2, keypoints1, keypoints2, desc1, desc2, is_fastr=False):
+def match_features(img1: np.ndarray, img2: np.ndarray, 
+                  keypoints1: List, keypoints2: List, 
+                  desc1: np.ndarray, desc2: np.ndarray, 
+                  is_fastr: bool=False) -> Tuple[np.ndarray, float]:
     start_time = time.time()
     matches = find_matches(desc1, desc2)
     match_img = generate_match_visualization(img1, img2, keypoints1, keypoints2, matches)
@@ -26,7 +32,7 @@ def match_features(img1, img2, keypoints1, keypoints2, desc1, desc2, is_fastr=Fa
     
     return match_img, match_time
 
-def get_points(corners1, corners2):
+def get_points(corners1: np.ndarray, corners2: np.ndarray) -> Tuple[List, List]:
     y1, x1 = np.where(corners1)
     y2, x2 = np.where(corners2)
     
@@ -35,7 +41,8 @@ def get_points(corners1, corners2):
     
     return p1, p2
 
-def compute_descriptors(img1_gray, img2_gray, p1, p2):
+def compute_descriptors(img1_gray: np.ndarray, img2_gray: np.ndarray, 
+                       p1: List, p2: List) -> Tuple[np.ndarray, np.ndarray]:
     orb = cv.ORB_create( # use ORB method
         nfeatures=10000,  
         scaleFactor=1.2,
@@ -52,7 +59,8 @@ def compute_descriptors(img1_gray, img2_gray, p1, p2):
         
     return des1, des2
 
-def find_matches(des1, des2, thresh=30): 
+def find_matches(des1: np.ndarray, des2: np.ndarray, 
+                thresh: float=30) -> List:
     bf = cv.BFMatcher()
     matches = bf.knnMatch(des1, des2, k=2)
     
@@ -63,7 +71,9 @@ def find_matches(des1, des2, thresh=30):
     
     return good_matches
 
-def generate_match_visualization(img1, img2, p1, p2, matches):
+def generate_match_visualization(img1: np.ndarray, img2: np.ndarray, 
+                               p1: List, p2: List, 
+                               matches: List) -> np.ndarray:
     return cv.drawMatches(
         img1, p1,
         img2, p2,
@@ -71,7 +81,8 @@ def generate_match_visualization(img1, img2, p1, p2, matches):
         flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS
     )
 
-def generate_descriptors_single_image(img, corners, is_fastr=False):
+def generate_descriptors_single_image(img: np.ndarray, corners: np.ndarray, 
+                                    is_fastr: bool=False) -> Tuple[List, np.ndarray]:
     img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     
     y, x = np.where(corners)
