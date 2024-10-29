@@ -26,6 +26,7 @@ For conceptual knowledge:
 - https://sbme-tutorials.github.io/2018/cv/notes/6_week6.html#harris-operator
 - https://stackoverflow.com/questions/29377683/why-ransac-gives-me-different-results-every-time-i-run-it-on-the-same-point-clou
 - https://towardsdatascience.com/random-sample-consensus-helps-you-filter-those-pesky-outliers-9dbfbb8b668f
+- https://answers.opencv.org/question/12295/compute-inliers-for-a-homography/
 
 Learning Python OpenCV syntax:
 - https://www.geeksforgeeks.org/image-resizing-using-opencv-python/
