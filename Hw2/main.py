@@ -5,7 +5,6 @@ from image_processing import read_and_resize_image
 from fast_corner_detection import my_fast_detector, my_fastr_detector
 from feature_matching import generate_descriptors, generate_descriptors_single_image, match_features
 from timing import calculate_and_print_average_times, print_matching_times
-from panorama import create_panorama, create_panorama_4_images
 
 
 def main():
@@ -114,66 +113,10 @@ def main():
     print_matching_times(fast_desc_times, fast_match_times, fastr_desc_times, fastr_match_times)
 
     # 4: RANSAC and Panoramas
-    panorama_sets = [
-        ("S1-im1.png", "S1-im2.png", "S1-panorama.png"),
-        ("S3-im1.png", "S3-im2.png", "S3-panorama.png"),
-        ("S2-im1.png", "S2-im2.png", "S2-panorama.png"),
-        ("S4-im1.png", "S4-im2.png", "S4-panorama.png")
-        
-    ]
-    
-    for img1_path, img2_path, panorama_output in panorama_sets:
-        img1 = cv.imread(img1_path)
-        img2 = cv.imread(img2_path)
-        
-        if img1 is None or img2 is None:
-            print(f"Could not read images {img1_path} or {img2_path}")
-            continue
-            
-        fastr_corners1 = my_fastr_detector(img1) == 255
-        fastr_corners2 = my_fastr_detector(img2) == 255
-        keypoints1, _ = generate_descriptors_single_image(img1, fastr_corners1, is_fastr=True)
-        keypoints2, _ = generate_descriptors_single_image(img2, fastr_corners2, is_fastr=True)
-        
-        panorama = create_panorama(img1, img2, keypoints1, keypoints2)
-        
-      
-        cv.imwrite(panorama_output, panorama)
-        print(f"pano saved to {panorama_output}")
+  
     
     # 5: Stitch 4 images instead of 2
-    panorama_4_sets = [
-        (["S3-im1.png", "S3-im2.png", "IMG_1209.jpg", "IMG_1210.jpg"], "S3-pano4.png"),
-        (["S2-im1.png", "S2-im2.png", "IMG_1203.jpg", "IMG_1204.jpg"], "S2-pano4.png")
-    ]
-    
-    for img_paths, output_path in panorama_4_sets:
-
-        imgs = []
-        keypoints_list = []
-        
-        for img_path in img_paths:
-            if img_path.endswith('.jpg'): # for the new pics
-                output_name = img_path.replace('.jpg', '.png')
-                read_and_resize_image(img_path, output_name)
-                img_path = output_name
-            
-            img = cv.imread(img_path)
-
-            imgs.append(img)
-            
-            fastr_corners = my_fastr_detector(img) == 255
-            keypoints, _ = generate_descriptors_single_image(img, fastr_corners, is_fastr=True)
-            keypoints_list.append(keypoints)
-        
-        if len(imgs) == 4: # for the 4 pic panos
-            panorama = create_panorama_4_images(imgs, keypoints_list)
-            
-            if panorama is not None:
-                cv.imwrite(output_path, panorama)
-                print(f"4-image panorama saved to {output_path}")
-            else:
-                print(f"Failed to create 4-image panorama for {output_path}")
+ 
 
 
 if __name__ == "__main__":
