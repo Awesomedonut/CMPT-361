@@ -15,19 +15,21 @@ Rasterizer.prototype.drawLine = function(v1, v2) { // drawLine func for step 1, 
   const m = (y2 - y1) / (x2 - x1);
 
   // if 0 <= m <= 1
-  if (Math.abs(m) <= 1 && dx != 0) {
-    if (x1 < x2){
-      var start_x = x1;
-      var end_x = x2;
-      const y = y1;
-      const [start_r, start_g, start_b] = [r1, g1, b1];
-      const [end_r, end_g, end_b] = [r2, g2, b2];
+  if (Math.abs(m) <= 1) {
+    let start_x, end_x, y, start_r, start_g, start_b, end_r, end_g, end_b;
+    
+    if (x1 < x2) {
+      start_x = x1;
+      end_x = x2;
+      y = y1;
+      [start_r, start_g, start_b] = [r1, g1, b1];
+      [end_r, end_g, end_b] = [r2, g2, b2];
     } else {
-      var start_x = x2;
-      var end_x = x1;
-      const y = y2;
-      const [start_r, start_g, start_b] = [r2, g2, b2];
-      const [end_r, end_g, end_b] = [r1, g1, b1];
+      start_x = x2;
+      end_x = x1;
+      y = y2;
+      [start_r, start_g, start_b] = [r2, g2, b2];
+      [end_r, end_g, end_b] = [r1, g1, b1];
     }
 
     for (let x = start_x; x <= end_x; ++x) {
@@ -37,32 +39,32 @@ Rasterizer.prototype.drawLine = function(v1, v2) { // drawLine func for step 1, 
       const g = start_g + (end_g - start_g) * distance;
       const b = start_b + (end_b - start_b) * distance;
       
-      
       this.setPixel(x, Math.round(y), [r, g, b]);
       y += m;
     }
   } else { // if m is not between 0 and 1
+    let start_x, end_x, start_y, end_y, start_r, start_g, start_b, end_r, end_g, end_b;
+    
     if (y1 < y2) {
-      var start_x = x1;
-      var end_x = x2;
-      var start_y = y1;
-      var end_y = y2;
-      const [start_r, start_g, start_b] = [r1, g1, b1];
-      const [end_r, end_g, end_b] = [r2, g2, b2];
+      start_x = x1;
+      end_x = x2;
+      start_y = y1;
+      end_y = y2;
+      [start_r, start_g, start_b] = [r1, g1, b1];
+      [end_r, end_g, end_b] = [r2, g2, b2];
     } else {
-      var start_x = x2;
-      var end_x = x1;
-      var start_y = y2;
-      var end_y = y1;
-      const [start_r, start_g, start_b] = [r2, g2, b2];
-      const [end_r, end_g, end_b] = [r1, g1, b1];
-  }
+      start_x = x2;
+      end_x = x1;
+      start_y = y2;
+      end_y = y1;
+      [start_r, start_g, start_b] = [r2, g2, b2];
+      [end_r, end_g, end_b] = [r1, g1, b1];
+    }
   
-  const m_inverse = (end_x - start_x) / (end_y - start_y); // slope interverse
-  let x = start_x;
-  
-  for (let y = start_y; y <= end_y; y++) {
-
+    const m_inverse = (end_x - start_x) / (end_y - start_y); // slope inverse
+    let x = start_x;
+    
+    for (let y = start_y; y <= end_y; y++) {
       const distance = (y - start_y) / (end_y - start_y);
       const r = start_r + (end_r - start_r) * distance;
       const g = start_g + (end_g - start_g) * distance;
@@ -70,16 +72,16 @@ Rasterizer.prototype.drawLine = function(v1, v2) { // drawLine func for step 1, 
   
       this.setPixel(Math.round(x), y, [r, g, b]);
       x += m_inverse;
-  
     }
   }
   
   console.log("graphics is very cool :D" + m);
+}
 
   // TODO/HINT: use this.setPixel(x, y, color) in this function to draw line
   //this.setPixel(Math.floor(x1), Math.floor(y1), [r1, g1, b1]);
   //this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
-}
+
 
 // take 3 vertices defining a solid triangle and rasterize to framebuffer
 Rasterizer.prototype.drawTriangle = function(v1, v2, v3) {
