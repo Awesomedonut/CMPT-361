@@ -83,15 +83,65 @@ Rasterizer.prototype.drawLine = function(v1, v2) { // drawLine func for step 1, 
   //this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
 
 
+//step 3. inside outside test func
+
+// line eqn: ax + by + c. if > 0 then point is in triangle
+function lineEquation(x0, y0, x1, y1, x, y) {
+  const a = y1 - y0;
+  const b = x0 - x1;
+  const c = x1 * y0 - x0 * y1;
+  return a * x + b * y + c;
+}
+
+// helper func
+function pointIsInsideTriangle(v1, v2, v3, x, y) {
+  const [x1, y1] = v1;
+  const [x2, y2] = v2;
+  const [x3, y3] = v3;
+  
+  const e1 = lineEquation(x1, y1, x2, y2, x, y);
+  const e2 = lineEquation(x2, y2, x3, y3, x, y);
+  const e3 = lineEquation(x3, y3, x1, y1, x, y);
+
+  // top left rule
+  function pointIsTopOrLeftEdge(x1, y1, x2, y2, e) {
+    if (y1 === y2) { 
+      return y1 > y2; // horz
+    }
+    return x1 < x2; // left
+  }
+
+
+  const include1 = e1 === 0 ? pointIsTopOrLeftEdge(x1, y1, x2, y2, e1) : e1 > 0;
+  const include2 = e2 === 0 ? pointIsTopOrLeftEdge(x2, y2, x3, y3, e2) : e2 > 0;
+  const include3 = e3 === 0 ? pointIsTopOrLeftEdge(x3, y3, x1, y1, e3) : e3 > 0;
+
+  return include1 && include2 && include3;
+}
+
 // take 3 vertices defining a solid triangle and rasterize to framebuffer
 Rasterizer.prototype.drawTriangle = function(v1, v2, v3) {
   const [x1, y1, [r1, g1, b1]] = v1;
   const [x2, y2, [r2, g2, b2]] = v2;
   const [x3, y3, [r3, g3, b3]] = v3;
-  // TODO/HINT: use this.setPixel(x, y, color) in this function to draw triangle
-  this.setPixel(Math.floor(x1), Math.floor(y1), [r1, g1, b1]);
-  this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
-  this.setPixel(Math.floor(x3), Math.floor(y3), [r3, g3, b3]);
+  
+ // TODO/HINT: use this.setPixel(x, y, color) in this function to draw triangle
+//  this.setPixel(Math.floor(x1), Math.floor(y1), [r1, g1, b1]);
+//  this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
+//  this.setPixel(Math.floor(x3), Math.floor(y3), [r3, g3, b3]);
+
+  const minX = Math.floor(Math.min(x1, x2, x3));
+  const maxX = Math.ceil(Math.max(x1, x2, x3));
+  const minY = Math.floor(Math.min(y1, y2, y3));
+  const maxY = Math.ceil(Math.max(y1, y2, y3));
+  
+  for (let x = minX; x <= maxX; x++) {
+    for (let y = minY; y <= maxY; y++) {
+      if (pointIsInsideTriangle(v1, v2, v3, x + 0.5, y + 0.5)) {
+        this.setPixel(x, y, [r1, g1, b1]);
+      }
+    }
+  }
 }
 
 
