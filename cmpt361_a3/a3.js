@@ -14,9 +14,15 @@ Rasterizer.prototype.drawLine = function(v1, v2) { // drawLine func for step 1, 
   // m = delta y / delta x
   const m = (y2 - y1) / (x2 - x1);
   console.log("graphics is very cool :D" + m);
+  var y = y1;
+  var x;
+  for (x = x1; x <= x2; ++x){
+    this.setPixel(x, Math.floor(y1), [r1, g1, b1]);
+    y += m;
+  }
   // TODO/HINT: use this.setPixel(x, y, color) in this function to draw line
-  this.setPixel(Math.floor(x1), Math.floor(y1), [r1, g1, b1]);
-  this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
+  //this.setPixel(Math.floor(x1), Math.floor(y1), [r1, g1, b1]);
+  //this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
 }
 
 // take 3 vertices defining a solid triangle and rasterize to framebuffer
