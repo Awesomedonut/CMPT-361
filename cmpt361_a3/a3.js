@@ -99,22 +99,41 @@ function pointIsInsideTriangle(v1, v2, v3, x, y) {
   const [x2, y2] = v2;
   const [x3, y3] = v3;
   
-  const e1 = lineEquation(x1, y1, x2, y2, x, y);
-  const e2 = lineEquation(x2, y2, x3, y3, x, y);
-  const e3 = lineEquation(x3, y3, x1, y1, x, y);
+  const eqn1 = lineEquation(x1, y1, x2, y2, x, y);
+  const eqn2 = lineEquation(x2, y2, x3, y3, x, y);
+  const eqn3 = lineEquation(x3, y3, x1, y1, x, y);
 
   // top left rule
-  function pointIsTopOrLeftEdge(x1, y1, x2, y2, e) {
-    if (y1 === y2) { 
-      return y1 > y2; // horz
+  function pointIsTopOrLeftEdge(x1, y1, x2, y2, x3, y3) {
+    if (y1 === y2) {
+      return y3 < y1 && y3 < y2; // its a top edge if 3rd vertex is strictly below both of these
     }
-    return x1 < x2; // left
+    // its a left edge if endpoint is strictly lower than start point
+    return y2 > y1;
   }
 
+  let include1, include2, include3;
 
-  const include1 = e1 === 0 ? pointIsTopOrLeftEdge(x1, y1, x2, y2, e1) : e1 > 0;
-  const include2 = e2 === 0 ? pointIsTopOrLeftEdge(x2, y2, x3, y3, e2) : e2 > 0;
-  const include3 = e3 === 0 ? pointIsTopOrLeftEdge(x3, y3, x1, y1, e3) : e3 > 0;
+  // edge 1, v1 to v2
+  if (eqn1 === 0) {
+    include1 = pointIsTopOrLeftEdge(x1, y1, x2, y2, x3, y3);
+  } else {
+    include1 = eqn1 > 0;
+  }
+
+  // edge 2, v2 to v3
+  if (eqn2 === 0) {
+    include2 = pointIsTopOrLeftEdge(x2, y2, x3, y3, x1, y1);
+  } else {
+    include2 = eqn2 > 0;
+  }
+
+  // edge 3, v3 to v1
+  if (eqn3 === 0) {
+    include3 = pointIsTopOrLeftEdge(x3, y3, x1, y1, x2, y2);
+  } else {
+    include3 = eqn3 > 0;
+  }
 
   return include1 && include2 && include3;
 }
