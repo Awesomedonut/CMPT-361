@@ -138,26 +138,63 @@ function pointIsInsideTriangle(v1, v2, v3, x, y) {
   return include1 && include2 && include3;
 }
 
+function computeTriangleArea(x1, y1, x2, y2, x3, y3) {
+
+  return ((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)) / 2;
+}
+
+
+// step 5. helper func
+function barycentricCoordinates(x1, y1, x2, y2, x3, y3, px, py) {
+  // total triangle area. based on parallelogram method
+  const A = computeTriangleArea(x1, y1, x2, y2, x3, y3);
+  
+
+  const a0 = computeTriangleArea(x2, y2, x3, y3, px, py);
+  const a1 = computeTriangleArea(x3, y3, x1, y1, px, py);
+  const a2 = computeTriangleArea(x1, y1, x2, y2, px, py);
+  
+
+  const u = a0 / A;
+  const v = a1 / A;
+  const w = a2 / A;
+  
+  return [u, v, w];
+}
+
 // take 3 vertices defining a solid triangle and rasterize to framebuffer
 Rasterizer.prototype.drawTriangle = function(v1, v2, v3) {
   const [x1, y1, [r1, g1, b1]] = v1;
   const [x2, y2, [r2, g2, b2]] = v2;
   const [x3, y3, [r3, g3, b3]] = v3;
   
- // TODO/HINT: use this.setPixel(x, y, color) in this function to draw triangle
+  
+   // TODO/HINT: use this.setPixel(x, y, color) in this function to draw triangle
 //  this.setPixel(Math.floor(x1), Math.floor(y1), [r1, g1, b1]);
 //  this.setPixel(Math.floor(x2), Math.floor(y2), [r2, g2, b2]);
 //  this.setPixel(Math.floor(x3), Math.floor(y3), [r3, g3, b3]);
 
-  const minX = Math.floor(Math.min(x1, x2, x3));
-  const maxX = Math.ceil(Math.max(x1, x2, x3));
-  const minY = Math.floor(Math.min(y1, y2, y3));
-  const maxY = Math.ceil(Math.max(y1, y2, y3));
+// step 4
+  const min_x = Math.floor(Math.min(x1, x2, x3));
+  const max_x = Math.ceil(Math.max(x1, x2, x3));
+  const min_y = Math.floor(Math.min(y1, y2, y3));
+  const max_y = Math.ceil(Math.max(y1, y2, y3));
   
-  for (let x = minX; x <= maxX; x++) {
-    for (let y = minY; y <= maxY; y++) {
+  for (let x = min_x; x <= max_x; x++) {
+    for (let y = min_y; y <= max_y; y++) {
+
       if (pointIsInsideTriangle(v1, v2, v3, x + 0.5, y + 0.5)) {
-        this.setPixel(x, y, [r1, g1, b1]);
+        // Get barycentric coordinates for color interpolation
+        const [s, t, m] = barycentricCoordinates(
+          x1, y1, x2, y2, x3, y3, x + 0.5, y + 0.5
+        );
+        
+        // Interpolate each color channel
+        const r = r1 * s + r2 * t + r3 * m;
+        const g = g1 * s + g2 * t + g3 * m;
+        const b = b1 * s + b2 * t + b3 * m;
+        
+        this.setPixel(x, y, [r, g, b]);
       }
     }
   }
