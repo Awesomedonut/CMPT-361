@@ -72,13 +72,12 @@ TriangleMesh.prototype.createCube = function() {
   // normals for each face
   for (let i = 0; i < 6; i++) {
     const normal = [
- 
       [0, 1, 0],    // top
       [0, -1, 0],   // bottom
-      [1, 0, 0],    // r
-      [-1, 0, 0]    // L
+      [1, 0, 0],    // right
+      [-1, 0, 0],   // left
       [0, 0, 1],    // front
-      [0, 0, -1],   // bacl
+      [0, 0, -1]    // back
     ][i];
     
     for (let j = 0; j < 6; j++) { // 6 vertices per face
@@ -236,18 +235,25 @@ uniform vec3 lightPosition;
 varying vec2 vTexCoord;
 
 
+
 // TODO: implement fragment shader logic below
 
 
 //varying vec3 temp;
 
+
+
+
 varying vec3 vNormal;
 varying vec3 vPosition;
 
 void main() {
-//gl_FragColor = vec4(temp, 1.0);  
+  
+  //gl_FragColor = vec4(temp, 1.0);  
 
-vec3 normal = normalize(vNormal);
+//vec3 normal = normalize(vNormal);
+  
+  vec3 normal = normalize(vNormal);
   vec3 lightDir = normalize(lightPosition - vPosition);
   
   // Ambient
@@ -257,10 +263,15 @@ vec3 normal = normalize(vNormal);
   float diff = max(dot(normal, lightDir), 0.0);
   vec3 diffuse = kd * diff;
   
-  // Specular
+  // Specular - using Blinn-Phong instead of Phong
   vec3 viewDir = normalize(-vPosition);
-  vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+  
+  
+ // vec3 reflectDir = reflect(-lightDir, normal);
+ // float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+  
+  vec3 halfwayDir = normalize(lightDir + viewDir);
+  float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
   vec3 specular = ks * spec;
   
   vec3 result = (ambient + diffuse + specular) * lightIntensity;
