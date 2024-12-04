@@ -166,12 +166,15 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
       const x = xy * Math.cos(sectorAngle);
       const y = xy * Math.sin(sectorAngle);
       
+
+
       positions.push(x, y, z);
       normals.push(x, y, z);
       uvCoords.push(j / numSectors, i / numStacks);
     }
   }
   
+
   for (let i = 0; i < numStacks; i++) {
     let k1 = i * (numSectors + 1);
     let k2 = k1 + numSectors + 1;
@@ -185,6 +188,7 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
       }
     }
   }
+
 
   this.positions = positions;
   this.normals = normals;
@@ -205,21 +209,21 @@ Scene.prototype.computeTransformation = function(transformSequence) {
         );
         break;
         
-      case 'Rx': // rotation around X
+      case 'Rx': // rotation around x
         overallTransform = Mat4.multiply(
           Mat4.rotateX(transform.angle * Math.PI / 180),
           overallTransform
         );
         break;
         
-      case 'Ry': // rotation around Y
+      case 'Ry': // rotation around y
         overallTransform = Mat4.multiply(
           Mat4.rotateY(transform.angle * Math.PI / 180),
           overallTransform
         );
         break;
         
-      case 'Rz': // rotation around Z
+      case 'Rz': // rotation around z
         overallTransform = Mat4.multiply(
           Mat4.rotateZ(transform.angle * Math.PI / 180),
           overallTransform
@@ -247,21 +251,17 @@ uniform mat4 projectionMatrix, viewMatrix, modelMatrix;
 uniform mat3 normalMatrix;
 varying vec2 vTexCoord;
 
-
-// TODO: implement vertex shader logic below
-
-// varying vec3 temp;
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 fPosition;
+varying vec3 fNormal;
+varying vec3 fLightPosition;
 
 void main() {
-  //temp = vec3(position.x, normal.x, uvCoord.x);
-  vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-  vPosition = worldPosition.xyz;
-  vNormal = normalMatrix * normal;
   vTexCoord = uvCoord;
- // gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
-  gl_Position = projectionMatrix * viewMatrix * worldPosition;
+  vec4 pos = viewMatrix * modelMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * pos;
+  fPosition = pos.xyz;
+  fNormal = normalize(normalMatrix * normal);
+  fLightPosition = (viewMatrix * vec4(lightPosition, 1.0)).xyz;
 }
 `;
 
@@ -271,56 +271,44 @@ uniform vec3 ka, kd, ks, lightIntensity;
 uniform float shininess;
 uniform sampler2D uTexture;
 uniform bool hasTexture;
-uniform vec3 lightPosition;
 varying vec2 vTexCoord;
 
-
-
-// TODO: implement fragment shader logic below
-
-
-//varying vec3 temp;
-
-
-
-
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 fPosition;
+varying vec3 fNormal;
+varying vec3 fLightPosition;
 
 void main() {
+  vec3 lightDirection = normalize(fLightPosition - fPosition);
+  float lightMag = length(fLightPosition - fPosition);
+  float lightMagSqrd = lightMag * lightMag;
   
-  //gl_FragColor = vec4(temp, 1.0);  
+  float normalDotLight = max(0.0, dot(fNormal, lightDirection));
+  
+  vec3 ca = ka * lightIntensity;
+  
+  vec3 cd = kd / lightMagSqrd * 
+            normalDotLight * 
+            lightIntensity;
+            
+  vec3 lambartianColor = cd;
 
-//vec3 normal = normalize(vNormal);
-  
-  vec3 normal = normalize(vNormal);
-  vec3 lightDir = normalize(lightPosition - vPosition);
-  
-  // Ambient
-  vec3 ambient = ka;
-  
-  // Diffuse
-  float diff = max(dot(normal, lightDir), 0.0);
-  vec3 diffuse = kd * diff;
-  
-  // Specular - using Blinn-Phong instead of Phong
-  vec3 viewDir = normalize(-vPosition);
+
   
   
- // vec3 reflectDir = reflect(-lightDir, normal);
- // float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+  vec3 reflectionDirection = reflect(-lightDirection, fNormal);
+  float reflectDotView = max(0.0, dot(reflectionDirection, -normalize(fPosition)));
   
-  vec3 halfwayDir = normalize(lightDir + viewDir);
-  float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
-  vec3 specular = ks * spec;
-  
-  vec3 result = (ambient + diffuse + specular) * lightIntensity;
+  vec3 cs = ks / lightMagSqrd * 
+            pow(reflectDotView, shininess) * 
+            lightIntensity;
+
+  vec4 color = vec4(lambartianColor + cd + ca + cs, 1.0);
   
   if (hasTexture) {
-    result *= texture2D(uTexture, vTexCoord).rgb;
+    color *= texture2D(uTexture, vTexCoord);
   }
   
-  gl_FragColor = vec4(result, 1.0);
+  gl_FragColor = color;
 }
 `;
 
