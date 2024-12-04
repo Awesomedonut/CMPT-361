@@ -26,7 +26,7 @@ TriangleMesh.prototype.createCube = function() {
     // this.normals = quad.normals;
     // this.uvCoords = quad.uvCoords;
   
-  const positions = [];
+  const positions = []; 
   const normals = [];
   const uvCoords = [];
 
@@ -69,29 +69,67 @@ TriangleMesh.prototype.createCube = function() {
       -1, -1, -1,   1,  1, -1,   1, -1, -1   // tri 2
     );
   
-  // normals for each face
-  for (let i = 0; i < 6; i++) {
-    const normal = [
-      [0, 1, 0],    // top
-      [0, -1, 0],   // bottom
-      [1, 0, 0],    // right
-      [-1, 0, 0],   // left
-      [0, 0, 1],    // front
-      [0, 0, -1]    // back
-    ][i];
-    
-    for (let j = 0; j < 6; j++) { // 6 vertices per face
-      normals.push(...normal);
-    }
-  }
+    // normals
+  // top face 
+  normals.push(0, 1, 0, 0, 1, 0, 0, 1, 0,
+               0, 1, 0, 0, 1, 0, 0, 1, 0);
+
+  // bottom face  
+  normals.push(0, -1, 0, 0, -1, 0, 0, -1, 0,
+               0, -1, 0, 0, -1, 0, 0, -1, 0);
+
+  // right 
+  normals.push(1, 0, 0, 1, 0, 0, 1, 0, 0,
+               1, 0, 0, 1, 0, 0, 1, 0, 0);
+
+  // left 
+  normals.push(-1, 0, 0, -1, 0, 0, -1, 0, 0,
+               -1, 0, 0, -1, 0, 0, -1, 0, 0);
+
+  // front 
+  normals.push(0, 0, 1, 0, 0, 1, 0, 0, 1,
+               0, 0, 1, 0, 0, 1, 0, 0, 1);
+
+  // back 
+  normals.push(0, 0, -1, 0, 0, -1, 0, 0, -1,
+               0, 0, -1, 0, 0, -1, 0, 0, -1);
   
   // uv coords
-  for (let i = 0; i < 6; i++) {
-    uvCoords.push(
-      0, 0,  1, 0,  1, 1,  // triangle 1
-      0, 0,  1, 1,  0, 1   // triangle 2
-    );
-  }
+  // top
+  uvCoords.push(
+    1/2, 1/3, 0, 1/3, 0, 0,     // triangle 1
+    1/2, 1/3, 0, 0, 1/2, 0      // triangle 2
+  );
+
+  // bottom
+  uvCoords.push(
+    1/2, 1, 1, 1, 1, 2/3,       // triangle 1
+    1/2, 1, 1, 2/3, 1/2, 2/3    // triangle 2
+  );
+
+  // right
+  uvCoords.push(
+    1/2, 1/3, 0, 1/3, 0, 2/3,   // triangle 1
+    1/2, 1/3, 0, 2/3, 1/2, 2/3  // triangle 2
+  );
+
+  // left
+  uvCoords.push(
+    1, 2/3, 1/2, 2/3, 1/2, 1/3, // triangle 1
+    1, 2/3, 1/2, 1/3, 1, 1/3    // triangle 2
+  );
+
+  // front
+  uvCoords.push(
+    1/2, 1, 0, 1, 0, 2/3,       // triangle 1
+    1/2, 1, 0, 2/3, 1/2, 2/3    // triangle 2
+  );
+
+  // back
+  uvCoords.push(
+    1, 1/3, 1/2, 1/3, 1/2, 0,   // triangle 1
+    1, 1/3, 1/2, 0, 1, 0        // triangle 2
+  );
   
   this.positions = positions;
   this.normals = normals;
