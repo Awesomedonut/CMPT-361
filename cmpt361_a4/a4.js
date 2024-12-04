@@ -98,6 +98,8 @@ TriangleMesh.prototype.createCube = function() {
   this.uvCoords = uvCoords;
 }
 
+
+
 TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
     // TODO: populate unit sphere vertex positions, normals, uv coordinates, and indices
     // this.positions = quad.positions.slice(0, 9).map(p => p * 0.5);
