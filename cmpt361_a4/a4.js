@@ -196,51 +196,84 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
   this.indices = indices;
 }
 
-Scene.prototype.computeTransformation = function(transformSequence) {
-   // TODO: go through transform sequence and compose into overallTransform
-  let overallTransform = Mat4.create();  // identity matrix
-  
-  for (const transform of transformSequence) {
-    switch (transform.type) {
-      case 'T': // transform
-        overallTransform = Mat4.multiply(
-          Mat4.translate(transform.x, transform.y, transform.z),
-          overallTransform
-        );
-        break;
-        
-      case 'Rx': // rotation around x
-        overallTransform = Mat4.multiply(
-          Mat4.rotateX(transform.angle * Math.PI / 180),
-          overallTransform
-        );
-        break;
-        
-      case 'Ry': // rotation around y
-        overallTransform = Mat4.multiply(
-          Mat4.rotateY(transform.angle * Math.PI / 180),
-          overallTransform
-        );
-        break;
-        
-      case 'Rz': // rotation around z
-        overallTransform = Mat4.multiply(
-          Mat4.rotateZ(transform.angle * Math.PI / 180),
-          overallTransform
-        );
-        break;
-        
-      case 'S': // scale
-        overallTransform = Mat4.multiply(
-          Mat4.scale(transform.x, transform.y, transform.z),
-          overallTransform
-        );
-        break;
-    }
+
+
+function getTransformMatrix(singleTransform) {
+  let mat = Mat4.create();  // identity matrix
+  switch (singleTransform[0]) {
+    case "Rx":
+      {
+        const c = Math.cos(singleTransform[1] * (Math.PI/180));
+        const s = Math.sin(singleTransform[1] * (Math.PI/180));
+        mat = Mat4.set(mat,
+           1,  0,  0,  0,
+           0,  c,  s,  0,
+           0, -s,  c,  0,
+           0,  0,  0,  1);
+      }
+      break;
+    case "Ry":
+      {
+        const c = Math.cos(singleTransform[1] * (Math.PI/180));
+        const s = Math.sin(singleTransform[1] * (Math.PI/180));
+        mat = Mat4.set(mat,
+           c,  0, -s,  0,
+           0,  1,  0,  0,
+           s,  0,  c,  0,
+           0,  0,  0,  1);
+      }
+      break
+    case "Rz":
+      {
+        const c = Math.cos(singleTransform[1] * (Math.PI/180));
+        const s = Math.sin(singleTransform[1] * (Math.PI/180));
+        mat = Mat4.set(mat,
+           c, s,  0,  0,
+           -s,  c,  0,  0,
+           0,  0,  1,  0,
+           0,  0,  0,  1);
+      }
+      break;
+    case "S":
+      {
+        const sx = singleTransform[1];
+        const sy = singleTransform[2];
+        const sz = singleTransform[3];
+        mat = Mat4.set(mat,
+          sx, 0,  0,  0,
+          0,  sy, 0,  0,
+          0,  0,  sz, 0,
+          0,  0,  0,  1);
+      }
+      break;
+    case "T":
+      {
+        const tx = singleTransform[1];
+        const ty = singleTransform[2];
+        const tz = singleTransform[3];
+        mat = Mat4.set(mat,
+          1, 0, 0, 0,
+          0, 1, 0, 0,
+          0, 0, 1, 0,
+          tx, ty, tz, 1 );
+      }
+      break;
+    default:
+      console.log("could not compute matrix for " + singleTransform);
   }
-  
+  return mat;
+}
+
+Scene.prototype.computeTransformation = function(transformSequence) {
+  let overallTransform = Mat4.create();  // identity matrix
+  for (let i = 0; i < transformSequence.length; i++) {
+    let nextTransMat = getTransformMatrix(transformSequence[i]);
+    overallTransform = Mat4.multiply(overallTransform, nextTransMat, overallTransform);
+  }
   return overallTransform;
 }
+
+
 
 Renderer.prototype.VERTEX_SHADER = `
 precision mediump float;
@@ -293,7 +326,7 @@ void main() {
   vec3 lambartianColor = cd;
 
 
-  
+
   
   vec3 reflectionDirection = reflect(-lightDirection, fNormal);
   float reflectDotView = max(0.0, dot(reflectionDirection, -normalize(fPosition)));
