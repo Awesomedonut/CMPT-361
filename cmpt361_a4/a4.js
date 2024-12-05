@@ -205,78 +205,102 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
 
 
 
-function getTransformMatrix(singleTransform) {
-  let mat = Mat4.create();  // identity matrix
-  switch (singleTransform[0]) {
+function calculateTransfMat(transform) {
+  const mat = Mat4.create();
+  const [type, ...param] = transform;
+  
+  switch (type) {
     case "Rx":
-      {
-        const c = Math.cos(singleTransform[1] * (Math.PI/180));
-        const s = Math.sin(singleTransform[1] * (Math.PI/180));
-        mat = Mat4.set(mat,
-           1,  0,  0,  0,
-           0,  c,  s,  0,
-           0, -s,  c,  0,
-           0,  0,  0,  1);
-      }
-      break;
     case "Ry":
-      {
-        const c = Math.cos(singleTransform[1] * (Math.PI/180));
-        const s = Math.sin(singleTransform[1] * (Math.PI/180));
-        mat = Mat4.set(mat,
-           c,  0, -s,  0,
-           0,  1,  0,  0,
-           s,  0,  c,  0,
-           0,  0,  0,  1);
-      }
-      break
-    case "Rz":
-      {
-        const c = Math.cos(singleTransform[1] * (Math.PI/180));
-        const s = Math.sin(singleTransform[1] * (Math.PI/180));
-        mat = Mat4.set(mat,
-           c, s,  0,  0,
-           -s,  c,  0,  0,
-           0,  0,  1,  0,
-           0,  0,  0,  1);
+    case "Rz": {
+      const angle = param[0] * (Math.PI/180);
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+      
+      switch (type) {
+        case "Rx":
+          /* since webgl uses column major order, matrices look kinda weird
+          putting this here for reference:
+
+           1 0 0 0
+           0 cos(theta) -sin(theta) 0
+           0 sin(theta) cos(theta) 0
+           0 0 0 1
+          */
+      
+          return Mat4.set(mat,
+            1, 0,  0, 0,
+            0, c,  s, 0,
+            0, -s, c, 0,
+            0, 0,  0, 1);
+        case "Ry":
+          /* matrix in slides:
+           cos(theta) 0 sin(theta) 0
+           0 1 0 0
+           -sin(theta) 0 cos(theta) 0
+           0 0 0 1
+          */
+          return Mat4.set(mat,
+            c,  0, -s, 0,
+            0,  1,  0, 0,
+            s,  0,  c, 0,
+            0,  0,  0, 1);
+        case "Rz":
+          /* matrix in slides:
+           cos(theta) -sin(theta) 0 0
+           sin(theta) cos(theta) 0 0
+           0 0 1 0
+           0 0 0 1
+          */
+          return Mat4.set(mat,
+            c,  s, 0, 0,
+            -s, c, 0, 0,
+            0,  0, 1, 0,
+            0,  0, 0, 1);
       }
       break;
+    }
+    
     case "S":
-      {
-        const sx = singleTransform[1];
-        const sy = singleTransform[2];
-        const sz = singleTransform[3];
-        mat = Mat4.set(mat,
-          sx, 0,  0,  0,
-          0,  sy, 0,  0,
-          0,  0,  sz, 0,
-          0,  0,  0,  1);
-      }
-      break;
+      /**
+       * sx 0 0 0
+       * 0 sy 0 0
+       * 0 0 sz 0
+       * 0 0 0 1
+       */
+      return Mat4.set(mat,
+        param[0], 0,        0,        0,
+        0,        param[1], 0,        0,
+        0,        0,        param[2], 0,
+        0,        0,        0,         1);
+    
     case "T":
-      {
-        const tx = singleTransform[1];
-        const ty = singleTransform[2];
-        const tz = singleTransform[3];
-        mat = Mat4.set(mat,
-          1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, 0,
-          tx, ty, tz, 1 );
-      }
-      break;
+      /* matrix from slides:
+      1 0 0 tx
+      0 1 0 ty
+      0 0 1 tz
+      0 0 0 1
+      */
+      return Mat4.set(mat,
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        param[0], param[1], param[2], 1);
+        
     default:
-      console.log("could not compute matrix for " + singleTransform);
+      console.error(`Unknown transform type: ${type}`);
+      return mat;
   }
-  return mat;
 }
 
 Scene.prototype.computeTransformation = function(transformSequence) {
   let overallTransform = Mat4.create();  // identity matrix
+  
   for (let i = 0; i < transformSequence.length; i++) {
-    let nextTransMat = getTransformMatrix(transformSequence[i]);
-    overallTransform = Mat4.multiply(overallTransform, nextTransMat, overallTransform);
+    const nextTransform = calculateTransfMat(transformSequence[i]);
+    overallTransform = Mat4.multiply(overallTransform, nextTransform, overallTransform);
   }
+  
   return overallTransform;
 }
 
@@ -297,9 +321,12 @@ varying vec3 fLightPosition;
 
 void main() {
   vTexCoord = uvCoord;
-  vec4 pos = viewMatrix * modelMatrix * vec4(position, 1.0);
-  gl_Position = projectionMatrix * pos;
-  fPosition = pos.xyz;
+  
+  vec4 modelSpacePos = vec4(position, 1.0);
+  vec4 viewSpacePos = viewMatrix * modelMatrix * modelSpacePos;
+  gl_Position = projectionMatrix * viewSpacePos;
+  
+  fPosition = viewSpacePos.xyz;
   fNormal = normalize(normalMatrix * normal);
   fLightPosition = (viewMatrix * vec4(lightPosition, 1.0)).xyz;
 }
@@ -313,11 +340,13 @@ uniform sampler2D uTexture;
 uniform bool hasTexture;
 varying vec2 vTexCoord;
 
+
 varying vec3 fPosition;
 varying vec3 fNormal;
 varying vec3 fLightPosition;
 
 void main() {
+
   vec3 lightDirection = normalize(fLightPosition - fPosition);
   float lightMag = length(fLightPosition - fPosition);
   float lightMagSqrd = lightMag * lightMag;
