@@ -97,38 +97,38 @@ positions.push(
   // uv coords
   // top
   uvCoords.push(
-    1/2, 1/3, 0, 1/3, 0, 0,     // triangle 1
-    1/2, 1/3, 0, 0, 1/2, 0      // triangle 2
+    1/2, 1/3, 0, 1/3, 0, 0,     
+    1/2, 1/3, 0, 0, 1/2, 0      
   );
 
   // bottom
   uvCoords.push(
-    1/2, 1, 1, 1, 1, 2/3,       // triangle 1
-    1/2, 1, 1, 2/3, 1/2, 2/3    // triangle 2
+    1/2, 1, 1, 1, 1, 2/3,       
+    1/2, 1, 1, 2/3, 1/2, 2/3    
   );
 
   // right
   uvCoords.push(
-    1/2, 1/3, 0, 1/3, 0, 2/3,   // triangle 1
-    1/2, 1/3, 0, 2/3, 1/2, 2/3  // triangle 2
+    1/2, 1/3, 0, 1/3, 0, 2/3,   
+    1/2, 1/3, 0, 2/3, 1/2, 2/3  
   );
 
   // left
   uvCoords.push(
-    1, 2/3, 1/2, 2/3, 1/2, 1/3, // triangle 1
-    1, 2/3, 1/2, 1/3, 1, 1/3    // triangle 2
+    1, 2/3, 1/2, 2/3, 1/2, 1/3, 
+    1, 2/3, 1/2, 1/3, 1, 1/3    
   );
 
   // front
   uvCoords.push(
-    1/2, 1, 0, 1, 0, 2/3,       // triangle 1
-    1/2, 1, 0, 2/3, 1/2, 2/3    // triangle 2
+    1/2, 1, 0, 1, 0, 2/3,       
+    1/2, 1, 0, 2/3, 1/2, 2/3    
   );
 
   // back
   uvCoords.push(
-    1, 1/3, 1/2, 1/3, 1/2, 0,   // triangle 1
-    1, 1/3, 1/2, 0, 1, 0        // triangle 2
+    1, 1/3, 1/2, 1/3, 1/2, 0,  
+    1, 1/3, 1/2, 0, 1, 0       
   );
   
   this.positions = positions;
@@ -147,17 +147,20 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
   
   
   
-  const positions = [];
+    const positions = [];
   const normals = [];
   const uvCoords = [];
   const indices = [];
   
   const sectorStep = 2 * Math.PI / numSectors;
   const stackStep = Math.PI / numStacks;
+
   
   for (let i = 0; i <= numStacks; i++) {
+
     const stackAngle = Math.PI / 2 - i * stackStep;
     const xy = Math.cos(stackAngle);
+
     const z = Math.sin(stackAngle);
     
     for (let j = 0; j <= numSectors; j++) {
@@ -165,30 +168,34 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
       
       const x = xy * Math.cos(sectorAngle);
       const y = xy * Math.sin(sectorAngle);
-      
+
+
 
 
       positions.push(x, y, z);
       normals.push(x, y, z);
-      uvCoords.push(j / numSectors, i / numStacks);
+      
+
+      let u = 1 - (j / numSectors);
+      let v = i / numStacks;
+      uvCoords.push(u, v);
     }
   }
-  
 
   for (let i = 0; i < numStacks; i++) {
     let k1 = i * (numSectors + 1);
     let k2 = k1 + numSectors + 1;
     
     for (let j = 0; j < numSectors; j++, k1++, k2++) {
-      if (i !== 0) {
+      if (i == 0 || i == (numStacks - 1)) {
         indices.push(k1, k2, k1 + 1);
       }
-      if (i !== (numStacks - 1)) {
+      if (i != (numStacks - 1)) {
         indices.push(k1 + 1, k2, k2 + 1);
+        indices.push(k1, k2, k1 + 1);
       }
     }
   }
-
 
   this.positions = positions;
   this.normals = normals;
