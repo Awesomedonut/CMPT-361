@@ -32,41 +32,41 @@ TriangleMesh.prototype.createCube = function() {
 
     // top
     positions.push(
-      -1,  1, -1,  -1,  1,  1,   1,  1,  1,  // triangle 1
-      -1,  1, -1,   1,  1,  1,   1,  1, -1   // triangle 2
+      1,  1, -1,  -1,  1, -1,  -1,  1,  1,
+      1,  1, -1,  -1,  1,  1,   1,  1,  1
     );
     
     // bottom
     positions.push(
-      -1, -1, -1,   1, -1, -1,   1, -1,  1,  // tri 1
-      -1, -1, -1,   1, -1,  1,  -1, -1,  1   // tri 2
+      -1, -1,  1,   1, -1,  1,   1, -1, -1,
+      -1, -1,  1,   1, -1, -1,  -1, -1, -1
     );
   
 
 
   // right
   positions.push(
-     1, -1, -1,   1,  1, -1,   1,  1,  1, 
-     1, -1, -1,   1,  1,  1,   1, -1,  1   
-  );
+    1, -1, -1,   1, -1,  1,   1,  1,  1,
+    1, -1, -1,   1,  1,  1,   1,  1, -1
+ );
   
   // left
-  positions.push(
-    -1, -1, -1,  -1, -1,  1,  -1,  1,  1,  
-    -1, -1, -1,  -1,  1,  1,  -1,  1, -1   
-  );
+positions.push(
+  -1,  1,  1,  -1,  1, -1,  -1, -1, -1,
+  -1,  1,  1,  -1, -1, -1,  -1, -1,  1
+);
 
 
     // front face
     positions.push(
-      -1, -1,  1,   1, -1,  1,   1,  1,  1,  // triangle 1
-      -1, -1,  1,   1,  1,  1,  -1,  1,  1   // triangle 2
-    );
+      1,  1,  1,  -1,  1,  1,  -1, -1,  1,
+      1,  1,  1,  -1, -1,  1,   1, -1,  1
+   );
     
     // back
     positions.push(
-      -1, -1, -1,  -1,  1, -1,   1,  1, -1,  // tri 1
-      -1, -1, -1,   1,  1, -1,   1, -1, -1   // tri 2
+      -1, -1, -1,   1, -1, -1,   1,  1, -1,
+      -1, -1, -1,   1,  1, -1,  -1,  1, -1
     );
   
     // normals
@@ -97,38 +97,38 @@ TriangleMesh.prototype.createCube = function() {
   // uv coords
   // top
   uvCoords.push(
-    1/2, 1/3, 0, 1/3, 0, 0,     // triangle 1
-    1/2, 1/3, 0, 0, 1/2, 0      // triangle 2
+    1/2, 1/3, 0, 1/3, 0, 0,     
+    1/2, 1/3, 0, 0, 1/2, 0      
   );
 
   // bottom
   uvCoords.push(
-    1/2, 1, 1, 1, 1, 2/3,       // triangle 1
-    1/2, 1, 1, 2/3, 1/2, 2/3    // triangle 2
+    1/2, 1, 1, 1, 1, 2/3,       
+    1/2, 1, 1, 2/3, 1/2, 2/3    
   );
 
   // right
   uvCoords.push(
-    1/2, 1/3, 0, 1/3, 0, 2/3,   // triangle 1
-    1/2, 1/3, 0, 2/3, 1/2, 2/3  // triangle 2
+    1/2, 1/3, 0, 1/3, 0, 2/3,   
+    1/2, 1/3, 0, 2/3, 1/2, 2/3  
   );
 
   // left
   uvCoords.push(
-    1, 2/3, 1/2, 2/3, 1/2, 1/3, // triangle 1
-    1, 2/3, 1/2, 1/3, 1, 1/3    // triangle 2
+    1, 2/3, 1/2, 2/3, 1/2, 1/3, 
+    1, 2/3, 1/2, 1/3, 1, 1/3    
   );
 
   // front
   uvCoords.push(
-    1/2, 1, 0, 1, 0, 2/3,       // triangle 1
-    1/2, 1, 0, 2/3, 1/2, 2/3    // triangle 2
+    1/2, 1, 0, 1, 0, 2/3,       
+    1/2, 1, 0, 2/3, 1/2, 2/3    
   );
 
   // back
   uvCoords.push(
-    1, 1/3, 1/2, 1/3, 1/2, 0,   // triangle 1
-    1, 1/3, 1/2, 0, 1, 0        // triangle 2
+    1, 1/3, 1/2, 1/3, 1/2, 0,  
+    1, 1/3, 1/2, 0, 1, 0       
   );
   
   this.positions = positions;
@@ -147,17 +147,20 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
   
   
   
-  const positions = [];
+    const positions = [];
   const normals = [];
   const uvCoords = [];
   const indices = [];
   
   const sectorStep = 2 * Math.PI / numSectors;
   const stackStep = Math.PI / numStacks;
+
   
   for (let i = 0; i <= numStacks; i++) {
+
     const stackAngle = Math.PI / 2 - i * stackStep;
     const xy = Math.cos(stackAngle);
+
     const z = Math.sin(stackAngle);
     
     for (let j = 0; j <= numSectors; j++) {
@@ -165,30 +168,34 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
       
       const x = xy * Math.cos(sectorAngle);
       const y = xy * Math.sin(sectorAngle);
-      
+
+
 
 
       positions.push(x, y, z);
       normals.push(x, y, z);
-      uvCoords.push(j / numSectors, i / numStacks);
+      
+
+      let u = 1 - (j / numSectors);
+      let v = i / numStacks;
+      uvCoords.push(u, v);
     }
   }
-  
 
   for (let i = 0; i < numStacks; i++) {
     let k1 = i * (numSectors + 1);
     let k2 = k1 + numSectors + 1;
     
     for (let j = 0; j < numSectors; j++, k1++, k2++) {
-      if (i !== 0) {
+      if (i == 0 || i == (numStacks - 1)) {
         indices.push(k1, k2, k1 + 1);
       }
-      if (i !== (numStacks - 1)) {
+      if (i != (numStacks - 1)) {
         indices.push(k1 + 1, k2, k2 + 1);
+        indices.push(k1, k2, k1 + 1);
       }
     }
   }
-
 
   this.positions = positions;
   this.normals = normals;
@@ -196,51 +203,108 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
   this.indices = indices;
 }
 
+
+
+function calculateTransfMat(transform) {
+  const mat = Mat4.create();
+  const [type, ...param] = transform;
+  
+  switch (type) {
+    case "Rx":
+    case "Ry":
+    case "Rz": {
+      const angle = param[0] * (Math.PI/180);
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+      
+      switch (type) {
+        case "Rx":
+          /* since webgl uses column major order, matrices look kinda weird
+          putting this here for reference:
+
+           1 0 0 0
+           0 cos(theta) -sin(theta) 0
+           0 sin(theta) cos(theta) 0
+           0 0 0 1
+          */
+      
+          return Mat4.set(mat,
+            1, 0,  0, 0,
+            0, c,  s, 0,
+            0, -s, c, 0,
+            0, 0,  0, 1);
+        case "Ry":
+          /* matrix in slides:
+           cos(theta) 0 sin(theta) 0
+           0 1 0 0
+           -sin(theta) 0 cos(theta) 0
+           0 0 0 1
+          */
+          return Mat4.set(mat,
+            c,  0, -s, 0,
+            0,  1,  0, 0,
+            s,  0,  c, 0,
+            0,  0,  0, 1);
+        case "Rz":
+          /* matrix in slides:
+           cos(theta) -sin(theta) 0 0
+           sin(theta) cos(theta) 0 0
+           0 0 1 0
+           0 0 0 1
+          */
+          return Mat4.set(mat,
+            c,  s, 0, 0,
+            -s, c, 0, 0,
+            0,  0, 1, 0,
+            0,  0, 0, 1);
+      }
+      break;
+    }
+    
+    case "S":
+      /**
+       * sx 0 0 0
+       * 0 sy 0 0
+       * 0 0 sz 0
+       * 0 0 0 1
+       */
+      return Mat4.set(mat,
+        param[0], 0,        0,        0,
+        0,        param[1], 0,        0,
+        0,        0,        param[2], 0,
+        0,        0,        0,         1);
+    
+    case "T":
+      /* matrix from slides:
+      1 0 0 tx
+      0 1 0 ty
+      0 0 1 tz
+      0 0 0 1
+      */
+      return Mat4.set(mat,
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        param[0], param[1], param[2], 1);
+        
+    default:
+      console.error(`Unknown transform type: ${type}`);
+      return mat;
+  }
+}
+
 Scene.prototype.computeTransformation = function(transformSequence) {
-   // TODO: go through transform sequence and compose into overallTransform
   let overallTransform = Mat4.create();  // identity matrix
   
-  for (const transform of transformSequence) {
-    switch (transform.type) {
-      case 'T': // transform
-        overallTransform = Mat4.multiply(
-          Mat4.translate(transform.x, transform.y, transform.z),
-          overallTransform
-        );
-        break;
-        
-      case 'Rx': // rotation around x
-        overallTransform = Mat4.multiply(
-          Mat4.rotateX(transform.angle * Math.PI / 180),
-          overallTransform
-        );
-        break;
-        
-      case 'Ry': // rotation around y
-        overallTransform = Mat4.multiply(
-          Mat4.rotateY(transform.angle * Math.PI / 180),
-          overallTransform
-        );
-        break;
-        
-      case 'Rz': // rotation around z
-        overallTransform = Mat4.multiply(
-          Mat4.rotateZ(transform.angle * Math.PI / 180),
-          overallTransform
-        );
-        break;
-        
-      case 'S': // scale
-        overallTransform = Mat4.multiply(
-          Mat4.scale(transform.x, transform.y, transform.z),
-          overallTransform
-        );
-        break;
-    }
+  for (let i = 0; i < transformSequence.length; i++) {
+    const nextTransform = calculateTransfMat(transformSequence[i]);
+    overallTransform = Mat4.multiply(overallTransform, nextTransform, overallTransform);
   }
   
   return overallTransform;
 }
+
+
 
 Renderer.prototype.VERTEX_SHADER = `
 precision mediump float;
@@ -257,9 +321,12 @@ varying vec3 fLightPosition;
 
 void main() {
   vTexCoord = uvCoord;
-  vec4 pos = viewMatrix * modelMatrix * vec4(position, 1.0);
-  gl_Position = projectionMatrix * pos;
-  fPosition = pos.xyz;
+  
+  vec4 modelSpacePos = vec4(position, 1.0);
+  vec4 viewSpacePos = viewMatrix * modelMatrix * modelSpacePos;
+  gl_Position = projectionMatrix * viewSpacePos;
+  
+  fPosition = viewSpacePos.xyz;
   fNormal = normalize(normalMatrix * normal);
   fLightPosition = (viewMatrix * vec4(lightPosition, 1.0)).xyz;
 }
@@ -273,11 +340,13 @@ uniform sampler2D uTexture;
 uniform bool hasTexture;
 varying vec2 vTexCoord;
 
+
 varying vec3 fPosition;
 varying vec3 fNormal;
 varying vec3 fLightPosition;
 
 void main() {
+
   vec3 lightDirection = normalize(fLightPosition - fPosition);
   float lightMag = length(fLightPosition - fPosition);
   float lightMagSqrd = lightMag * lightMag;
@@ -293,7 +362,7 @@ void main() {
   vec3 lambartianColor = cd;
 
 
-  
+
   
   vec3 reflectionDirection = reflect(-lightDirection, fNormal);
   float reflectDotView = max(0.0, dot(reflectionDirection, -normalize(fPosition)));
@@ -316,23 +385,53 @@ void main() {
 // EXTRA CREDIT: change DEF_INPUT to create something interesting!
 ////////////////////////////////////////////////////////////////////////////////
 const DEF_INPUT = [
-  "c,myCamera,perspective,5,5,5,0,0,0,0,1,0;",
+  "c,myCamera,perspective,8,2,-4,0,0,0,0,1,0;",
+  "m,infvoidMat,0,0,0,5,0,0,5,5,5,0,inf_void.jpg;",
+  "p,bgCube,cube;",
+  "o,bg,bgCube,infvoidMat;",
+  "X,bg,S,10,5,5;",
   "l,myLight,point,0,5,0,2,2,2;",
   "p,unitCube,cube;",
   "p,unitSphere,sphere,20,20;",
-  "m,redDiceMat,0.3,0,0,0.7,0,0,1,1,1,15,dice.jpg;",
-  "m,grnDiceMat,0,0.3,0,0,0.7,0,1,1,1,15,dice.jpg;",
-  "m,bluDiceMat,0,0,0.3,0,0,0.7,1,1,1,15,dice.jpg;",
-  "m,globeMat,0.3,0.3,0.3,0.7,0.7,0.7,1,1,1,5,globe.jpg;",
-  "o,rd,unitCube,redDiceMat;",
-  "o,gd,unitCube,grnDiceMat;",
-  "o,bd,unitCube,bluDiceMat;",
-  "o,gl,unitSphere,globeMat;",
+  "m,nahMat,1,1,1,0,0.7,0,1,1,1,15,nah.jpg;",
+  "m,nahMat2,1,1,1,0,0,0.7,1,1,1,15,nah.jpg;",
+  "m,gojoMat,0.3,0.3,0.3,0.7,0.7,0.7,1,1,1,5,gojo_nahidwin.jpg;",
+  "o,bd,unitCube,nahMat;",
+  "o,gl,unitSphere,gojoMat;",
+  "o,gd,unitCube,nahMat2;",
   "X,rd,Rz,75;X,rd,Rx,90;X,rd,S,0.5,0.5,0.5;X,rd,T,-1,0,2;",
   "X,gd,Ry,45;X,gd,S,0.5,0.5,0.5;X,gd,T,2,0,2;",
   "X,bd,S,0.5,0.5,0.5;X,bd,Rx,90;X,bd,T,2,0,-1;",
-  "X,gl,S,1.5,1.5,1.5;X,gl,Rx,90;X,gl,Ry,-150;X,gl,T,0,1.5,0;",
+  "X,gl,S,1.5,1.5,1.5;X,gl,Rx,90;X,gl,Ry,-150;",
+  "X,gl,T,0,1.5,0;",
+  "m,nahMat,0.3,0.3,0.3,0.7,0.7,0.7,1,1,1,10,nah.jpg;",
+  "p,unitCube,cube;",
+  "o,cube3,unitCube,nahMat;",
+  "X,cube3,T,0,3,-5;",
+  "X,cube3,Rx,-30;",
+  "X,cube3,Ry,90;",
+  "X,cube3,Rz,-15;",
+  "X,cube3,S,0.8,0.8,0.8;",
+  "o,cube4,unitCube,nahMat;",
+  "X,cube4,T, 0,0,-2;"
 ].join("\n");
+
+// "c,myCamera,perspective,5,5,5,0,0,0,0,1,0;",
+// "l,myLight,point,0,5,0,2,2,2;",
+// "p,unitCube,cube;",
+// "p,unitSphere,sphere,20,20;",
+// "m,redDiceMat,0.3,0,0,0.7,0,0,1,1,1,15,dice.jpg;",
+// "m,grnDiceMat,0,0.3,0,0,0.7,0,1,1,1,15,dice.jpg;",
+// "m,bluDiceMat,0,0,0.3,0,0,0.7,1,1,1,15,dice.jpg;",
+// "m,globeMat,0.3,0.3,0.3,0.7,0.7,0.7,1,1,1,5,globe.jpg;",
+// "o,rd,unitCube,redDiceMat;",
+// "o,gd,unitCube,grnDiceMat;",
+// "o,bd,unitCube,bluDiceMat;",
+// "o,gl,unitSphere,globeMat;",
+// "X,rd,Rz,75;X,rd,Rx,90;X,rd,S,0.5,0.5,0.5;X,rd,T,-1,0,2;",
+// "X,gd,Ry,45;X,gd,S,0.5,0.5,0.5;X,gd,T,2,0,2;",
+// "X,bd,S,0.5,0.5,0.5;X,bd,Rx,90;X,bd,T,2,0,-1;",
+// "X,gl,S,1.5,1.5,1.5;X,gl,Rx,90;X,gl,Ry,-150;X,gl,T,0,1.5,0;",
 
 // DO NOT CHANGE ANYTHING BELOW HERE
 export { Parser, Scene, Renderer, DEF_INPUT };
