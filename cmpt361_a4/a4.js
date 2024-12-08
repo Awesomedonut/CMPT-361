@@ -354,31 +354,28 @@ void main() {
   
   float normalDotLight = max(0.0, dot(f_Normal, lightDir));
   
-  vec3 ca = ka * lightIntensity;
+  vec3 ambient = ka * lightIntensity;
   
-  vec3 cd = kd / (lightMag * lightMag) * 
+  vec3 lambertian = kd / (lightMag * lightMag) * 
             normalDotLight * 
             lightIntensity;
             
-  vec3 lambertian = cd;
 
 
-
+  vec3 reflectionDir = reflect(-lightDir, f_Normal);
+  float reflectDotView = max(0.0, dot(reflectionDir, -normalize(f_Position)));
   
-  vec3 reflectionDirection = reflect(-lightDir, f_Normal);
-  float reflectDotView = max(0.0, dot(reflectionDirection, -normalize(f_Position)));
-  
-  vec3 cs = ks / (lightMag * lightMag) * 
+  vec3 specular = ks / (lightMag * lightMag) * 
             pow(reflectDotView, shininess) * 
             lightIntensity;
 
-  vec4 color = vec4(lambertian + cd + ca + cs, 1.0);
+  vec4 colour = vec4(lambertian + lambertian + ambient + specular, 1.0);
   
   if (hasTexture) {
-    color *= texture2D(uTexture, vTexCoord);
+    colour *= texture2D(uTexture, vTexCoord);
   }
   
-  gl_FragColor = color;
+  gl_FragColor = colour;
 }
 `;
 
