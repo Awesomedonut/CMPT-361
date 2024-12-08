@@ -369,7 +369,7 @@ void main() {
             pow(reflectDotView, shininess) * 
             lightIntensity;
 
-  vec4 colour = vec4(lambertian + lambertian + ambient + specular, 1.0);
+  vec4 colour = vec4(lambertian + ambient + specular, 1.0);
   
   if (hasTexture) {
     colour *= texture2D(uTexture, vTexCoord);
