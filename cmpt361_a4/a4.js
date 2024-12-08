@@ -156,6 +156,7 @@ TriangleMesh.prototype.createSphere = function(numStacks, numSectors) {
   const stackStep = Math.PI / numStacks;
 
   
+  // based on https://www.songho.ca/opengl/gl_sphere.html from the assignment README
   for (let i = 0; i <= numStacks; i++) {
 
     const stackAngle = Math.PI / 2 - i * stackStep;
@@ -288,7 +289,7 @@ function calculateTransfMat(transform) {
         param[0], param[1], param[2], 1);
         
     default:
-      console.error(`Unknown transform type: ${type}`);
+      console.error(`error ${type}`);
       return mat;
   }
 }
