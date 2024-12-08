@@ -360,7 +360,7 @@ void main() {
             normalDotLight * 
             lightIntensity;
             
-  vec3 lambartianColor = cd;
+  vec3 lambertian = cd;
 
 
 
@@ -372,7 +372,7 @@ void main() {
             pow(reflectDotView, shininess) * 
             lightIntensity;
 
-  vec4 color = vec4(lambartianColor + cd + ca + cs, 1.0);
+  vec4 color = vec4(lambertian + cd + ca + cs, 1.0);
   
   if (hasTexture) {
     color *= texture2D(uTexture, vTexCoord);
