@@ -315,9 +315,9 @@ uniform mat4 projectionMatrix, viewMatrix, modelMatrix;
 uniform mat3 normalMatrix;
 varying vec2 vTexCoord;
 
-varying vec3 fPosition;
-varying vec3 fNormal;
-varying vec3 fLightPosition;
+varying vec3 f_Position;
+varying vec3 f_Normal;
+varying vec3 f_lightPosition;
 
 void main() {
   vTexCoord = uvCoord;
@@ -326,9 +326,9 @@ void main() {
   vec4 viewSpacePos = viewMatrix * modelMatrix * modelSpacePos;
   gl_Position = projectionMatrix * viewSpacePos;
   
-  fPosition = viewSpacePos.xyz;
-  fNormal = normalize(normalMatrix * normal);
-  fLightPosition = (viewMatrix * vec4(lightPosition, 1.0)).xyz;
+  f_Position = viewSpacePos.xyz;
+  f_Normal = normalize(normalMatrix * normal);
+  f_lightPosition = (viewMatrix * vec4(lightPosition, 1.0)).xyz;
 }
 `;
 
@@ -341,21 +341,22 @@ uniform bool hasTexture;
 varying vec2 vTexCoord;
 
 
-varying vec3 fPosition;
-varying vec3 fNormal;
-varying vec3 fLightPosition;
+varying vec3 f_Position;
+varying vec3 f_Normal;
+
+varying vec3 f_lightPosition;
+
 
 void main() {
 
-  vec3 lightDirection = normalize(fLightPosition - fPosition);
-  float lightMag = length(fLightPosition - fPosition);
-  float lightMagSqrd = lightMag * lightMag;
+  vec3 lightDir = normalize(f_lightPosition - f_Position);
+  float lightMag = length(f_lightPosition - f_Position);
   
-  float normalDotLight = max(0.0, dot(fNormal, lightDirection));
+  float normalDotLight = max(0.0, dot(f_Normal, lightDir));
   
   vec3 ca = ka * lightIntensity;
   
-  vec3 cd = kd / lightMagSqrd * 
+  vec3 cd = kd / (lightMag * lightMag) * 
             normalDotLight * 
             lightIntensity;
             
@@ -364,10 +365,10 @@ void main() {
 
 
   
-  vec3 reflectionDirection = reflect(-lightDirection, fNormal);
-  float reflectDotView = max(0.0, dot(reflectionDirection, -normalize(fPosition)));
+  vec3 reflectionDirection = reflect(-lightDir, f_Normal);
+  float reflectDotView = max(0.0, dot(reflectionDirection, -normalize(f_Position)));
   
-  vec3 cs = ks / lightMagSqrd * 
+  vec3 cs = ks / (lightMag * lightMag) * 
             pow(reflectDotView, shininess) * 
             lightIntensity;
 
@@ -432,6 +433,31 @@ const DEF_INPUT = [
 // "X,gd,Ry,45;X,gd,S,0.5,0.5,0.5;X,gd,T,2,0,2;",
 // "X,bd,S,0.5,0.5,0.5;X,bd,Rx,90;X,bd,T,2,0,-1;",
 // "X,gl,S,1.5,1.5,1.5;X,gl,Rx,90;X,gl,Ry,-150;X,gl,T,0,1.5,0;",
+
+/**
+ * og input formatted for webgl ui
+ * for my reference
+ * 
+ * 
+c,myCamera,perspective,5,5,5,0,0,0,0,1,0;
+l,myLight,point,0,5,0,2,2,2;
+p,unitCube,cube;
+p,unitSphere,sphere,20,20;
+m,redDiceMat,0.3,0,0,0.7,0,0,1,1,1,15,dice.jpg;
+m,grnDiceMat,0,0.3,0,0,0.7,0,1,1,1,15,dice.jpg;
+m,bluDiceMat,0,0,0.3,0,0,0.7,1,1,1,15,dice.jpg;
+m,globeMat,0.3,0.3,0.3,0.7,0.7,0.7,1,1,1,5,globe.jpg;
+o,rd,unitCube,redDiceMat;
+o,gd,unitCube,grnDiceMat;
+o,bd,unitCube,bluDiceMat;
+o,gl,unitSphere,globeMat;
+X,rd,Rz,75;X,rd,Rx,90;X,rd,S,0.5,0.5,0.5;X,rd,T,-1,0,2;
+X,gd,Ry,45;X,gd,S,0.5,0.5,0.5;X,gd,T,2,0,2;
+X,bd,S,0.5,0.5,0.5;X,bd,Rx,90;X,bd,T,2,0,-1;
+X,gl,S,1.5,1.5,1.5;X,gl,Rx,90;X,gl,Ry,-150;X,gl,T,0,1.5,0;
+
+
+ */
 
 // DO NOT CHANGE ANYTHING BELOW HERE
 export { Parser, Scene, Renderer, DEF_INPUT };
